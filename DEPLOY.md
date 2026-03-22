@@ -38,7 +38,7 @@ cp .env.example .env
 | Variable | Descripción | Ejemplo |
 |---|---|---|
 | `DATABASE_URL` | Ruta a la base de datos SQLite | `file:./prisma/dev.db` |
-| `NEXTAUTH_URL` | URL pública de la aplicación | `https://sirope.ucr.ac.cr` |
+| `NEXTAUTH_URL` | URL pública de la aplicación | `https://sirope.universidad.cr` |
 | `NEXTAUTH_SECRET` | Secret para tokens JWT (mín 32 chars) | Generar con `openssl rand -base64 32` |
 | `CRON_SECRET` | Token para el cron de recordatorios | Generar con `openssl rand -base64 32` |
 
@@ -68,7 +68,7 @@ npm run seed
 ## 5. Crear usuario administrador
 
 El seed crea un admin por defecto:
-- **Email:** `admin@ucr.ac.cr`
+- **Email:** `admin@universidad.cr`
 - **Contraseña:** `Admin123!`
 
 > ⚠️ **CAMBIAR inmediatamente la contraseña en producción.**
@@ -101,7 +101,7 @@ Los recordatorios automáticos requieren un cron externo que invoque el endpoint
 
 ```bash
 # Ejecutar cada hora
-0 * * * * curl -s -X POST https://sirope.ucr.ac.cr/api/cron/reminders \
+0 * * * * curl -s -X POST https://sirope.universidad.cr/api/cron/reminders \
   -H "Authorization: Bearer $CRON_SECRET" > /dev/null
 ```
 

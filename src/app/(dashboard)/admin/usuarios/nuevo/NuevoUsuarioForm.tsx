@@ -89,7 +89,7 @@ export default function NuevoUsuarioForm() {
           <div className="form-group">
             <label className="form-label">Correo electrónico *</label>
             <input className="form-input" name="email" type="email" value={form.email} onChange={handleChange}
-              placeholder="usuario@ucr.ac.cr" required />
+              placeholder="usuario@universidad.cr" required />
           </div>
 
           <div className="form-group">

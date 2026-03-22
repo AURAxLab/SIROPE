@@ -1,5 +1,5 @@
-/**
- * SIROPE — Sistema de Registro Optativo de Participantes de Estudios
+﻿/**
+ * SIROPE â€” Sistema de Registro Optativo de Participantes de Estudios
  * @author Alexander Barquero Elizondo, Ph.D.
  *
  * Seed de Base de Datos
@@ -15,11 +15,11 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 /**
  * Ejecuta el seed completo de la base de datos.
- * Crea: configuración institucional, configuración del sistema,
- * semestre, usuarios de cada rol, cursos, matrículas y un estudio de ejemplo.
+ * Crea: configuraciÃ³n institucional, configuraciÃ³n del sistema,
+ * semestre, usuarios de cada rol, cursos, matrÃ­culas y un estudio de ejemplo.
  */
 async function main() {
-  // Prisma v7: importar dinámicamente el cliente generado (ESM)
+  // Prisma v7: importar dinÃ¡micamente el cliente generado (ESM)
   const { PrismaClient } = await import('../src/generated/prisma/client.js');
 
   // Crear adaptador SQLite y cliente Prisma
@@ -27,39 +27,39 @@ async function main() {
   const adapter = new PrismaBetterSqlite3({ url: dbUrl });
   const prisma = new PrismaClient({ adapter });
 
-  /** Contraseña por defecto para todos los usuarios de prueba. */
+  /** ContraseÃ±a por defecto para todos los usuarios de prueba. */
   const DEFAULT_PASSWORD = 'Sirope2026!';
 
-  console.log('🌱 Iniciando seed de base de datos...');
+  console.log('ðŸŒ± Iniciando seed de base de datos...');
 
   const passwordHash = await bcryptjs.hash(DEFAULT_PASSWORD, 12);
 
-  // ─── Configuración Institucional ───
+  // â”€â”€â”€ ConfiguraciÃ³n Institucional â”€â”€â”€
   await prisma.institutionConfig.upsert({
     where: { id: 'singleton' },
     update: {},
     create: {
       id: 'singleton',
-      name: 'Escuela de Ciencias de la Computación e Informática',
+      name: 'Escuela de Ciencias de la ComputaciÃ³n e InformÃ¡tica',
       shortName: 'ECCI',
       universityName: 'Universidad de Costa Rica',
       primaryColor: '#4F46E5',
       accentColor: '#F59E0B',
-      contactEmail: 'sirope@ecci.ucr.ac.cr',
-      website: 'https://ecci.ucr.ac.cr',
+      contactEmail: 'sirope@universidad.cr',
+      website: 'https://universidad.cr',
       timezone: 'America/Costa_Rica',
-      studentIdLabel: 'Carné',
+      studentIdLabel: 'CarnÃ©',
       authMode: 'CREDENTIALS',
       setupComplete: true,
     },
   });
-  console.log('  ✅ Configuración institucional');
+  console.log('  âœ… ConfiguraciÃ³n institucional');
 
-  // ─── Configuración del Sistema ───
+  // â”€â”€â”€ ConfiguraciÃ³n del Sistema â”€â”€â”€
   const systemConfigs = [
-    { key: 'MAX_CREDITS_PER_SEMESTER', value: '4', description: 'Máximo de créditos que un estudiante puede obtener en un semestre' },
-    { key: 'CANCELLATION_HOURS', value: '24', description: 'Horas mínimas antes del timeslot para cancelar sin penalización' },
-    { key: 'NO_SHOW_PENALTY_DAYS', value: '7', description: 'Días de bloqueo por no-show' },
+    { key: 'MAX_CREDITS_PER_SEMESTER', value: '4', description: 'MÃ¡ximo de crÃ©ditos que un estudiante puede obtener en un semestre' },
+    { key: 'CANCELLATION_HOURS', value: '24', description: 'Horas mÃ­nimas antes del timeslot para cancelar sin penalizaciÃ³n' },
+    { key: 'NO_SHOW_PENALTY_DAYS', value: '7', description: 'DÃ­as de bloqueo por no-show' },
   ];
 
   for (const config of systemConfigs) {
@@ -69,9 +69,9 @@ async function main() {
       create: config,
     });
   }
-  console.log('  ✅ Configuración del sistema');
+  console.log('  âœ… ConfiguraciÃ³n del sistema');
 
-  // ─── Semestre ───
+  // â”€â”€â”€ Semestre â”€â”€â”€
   const semester = await prisma.semester.upsert({
     where: { name: 'I-2026' },
     update: {},
@@ -82,14 +82,14 @@ async function main() {
       active: true,
     },
   });
-  console.log('  ✅ Semestre I-2026');
+  console.log('  âœ… Semestre I-2026');
 
-  // ─── Usuarios ───
+  // â”€â”€â”€ Usuarios â”€â”€â”€
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@ucr.ac.cr' },
+    where: { email: 'admin@universidad.cr' },
     update: {},
     create: {
-      email: 'admin@ucr.ac.cr',
+      email: 'admin@universidad.cr',
       passwordHash,
       name: 'Ana Administradora',
       role: 'ADMIN',
@@ -98,10 +98,10 @@ async function main() {
   });
 
   const profesor = await prisma.user.upsert({
-    where: { email: 'profesor@ucr.ac.cr' },
+    where: { email: 'profesor@universidad.cr' },
     update: {},
     create: {
-      email: 'profesor@ucr.ac.cr',
+      email: 'profesor@universidad.cr',
       passwordHash,
       name: 'Pedro Profesor',
       role: 'PROFESOR',
@@ -110,10 +110,10 @@ async function main() {
   });
 
   const investigadorPI = await prisma.user.upsert({
-    where: { email: 'investigador@ucr.ac.cr' },
+    where: { email: 'investigador@universidad.cr' },
     update: {},
     create: {
-      email: 'investigador@ucr.ac.cr',
+      email: 'investigador@universidad.cr',
       passwordHash,
       name: 'Irene Investigadora',
       role: 'INV_PRINCIPAL',
@@ -122,10 +122,10 @@ async function main() {
   });
 
   const investigadorIE = await prisma.user.upsert({
-    where: { email: 'ejecutor@ucr.ac.cr' },
+    where: { email: 'ejecutor@universidad.cr' },
     update: {},
     create: {
-      email: 'ejecutor@ucr.ac.cr',
+      email: 'ejecutor@universidad.cr',
       passwordHash,
       name: 'Eduardo Ejecutor',
       role: 'INV_EJECUTOR',
@@ -134,12 +134,12 @@ async function main() {
   });
 
   const estudiante = await prisma.user.upsert({
-    where: { email: 'estudiante@ucr.ac.cr' },
+    where: { email: 'estudiante@universidad.cr' },
     update: {},
     create: {
-      email: 'estudiante@ucr.ac.cr',
+      email: 'estudiante@universidad.cr',
       passwordHash,
-      name: 'Sofía Estudiante',
+      name: 'SofÃ­a Estudiante',
       role: 'ESTUDIANTE',
       studentId: 'B90000',
       active: true,
@@ -147,10 +147,10 @@ async function main() {
   });
 
   const estudiante2 = await prisma.user.upsert({
-    where: { email: 'estudiante2@ucr.ac.cr' },
+    where: { email: 'estudiante2@universidad.cr' },
     update: {},
     create: {
-      email: 'estudiante2@ucr.ac.cr',
+      email: 'estudiante2@universidad.cr',
       passwordHash,
       name: 'Carlos Estudiante',
       role: 'ESTUDIANTE',
@@ -159,15 +159,15 @@ async function main() {
     },
   });
 
-  console.log('  ✅ Usuarios (6): admin, profesor, IP, IE, 2 estudiantes');
+  console.log('  âœ… Usuarios (6): admin, profesor, IP, IE, 2 estudiantes');
 
-  // ─── Cursos ───
+  // â”€â”€â”€ Cursos â”€â”€â”€
   const curso1 = await prisma.course.upsert({
     where: { code_semesterId: { code: 'CI-1101', semesterId: semester.id } },
     update: {},
     create: {
       code: 'CI-1101',
-      name: 'Introducción a la Computación',
+      name: 'IntroducciÃ³n a la ComputaciÃ³n',
       semesterId: semester.id,
       professorId: profesor.id,
       maxExtraCredits: 2.0,
@@ -180,16 +180,16 @@ async function main() {
     update: {},
     create: {
       code: 'CI-1200',
-      name: 'Programación I',
+      name: 'ProgramaciÃ³n I',
       semesterId: semester.id,
       professorId: profesor.id,
       maxExtraCredits: 1.5,
       optedIn: true,
     },
   });
-  console.log('  ✅ Cursos (2): CI-1101, CI-1200');
+  console.log('  âœ… Cursos (2): CI-1101, CI-1200');
 
-  // ─── Matrículas ───
+  // â”€â”€â”€ MatrÃ­culas â”€â”€â”€
   await prisma.enrollment.upsert({
     where: { studentId_courseId: { studentId: estudiante.id, courseId: curso1.id } },
     update: {},
@@ -205,16 +205,16 @@ async function main() {
     update: {},
     create: { studentId: estudiante2.id, courseId: curso1.id },
   });
-  console.log('  ✅ Matrículas (3)');
+  console.log('  âœ… MatrÃ­culas (3)');
 
-  // ─── Estudio de ejemplo ───
+  // â”€â”€â”€ Estudio de ejemplo â”€â”€â”€
   const study = await prisma.study.upsert({
     where: { id: 'seed-study-1' },
     update: {},
     create: {
       id: 'seed-study-1',
-      title: 'Usabilidad de Interfaces en Dispositivos Móviles',
-      description: 'Estudio sobre la usabilidad de diferentes patrones de interfaz en aplicaciones móviles. Los participantes realizarán tareas simuladas en un prototipo y responderán un cuestionario posterior.',
+      title: 'Usabilidad de Interfaces en Dispositivos MÃ³viles',
+      description: 'Estudio sobre la usabilidad de diferentes patrones de interfaz en aplicaciones mÃ³viles. Los participantes realizarÃ¡n tareas simuladas en un prototipo y responderÃ¡n un cuestionario posterior.',
       principalInvestigatorId: investigadorPI.id,
       semesterId: semester.id,
       creditsWorth: 1.0,
@@ -225,17 +225,17 @@ async function main() {
       approvedAt: new Date(),
     },
   });
-  console.log('  ✅ Estudio de ejemplo: "Usabilidad de Interfaces"');
+  console.log('  âœ… Estudio de ejemplo: "Usabilidad de Interfaces"');
 
-  // ─── Colaborador ───
+  // â”€â”€â”€ Colaborador â”€â”€â”€
   await prisma.studyCollaborator.upsert({
     where: { studyId_userId: { studyId: study.id, userId: investigadorIE.id } },
     update: {},
     create: { studyId: study.id, userId: investigadorIE.id },
   });
-  console.log('  ✅ Colaborador IE asignado');
+  console.log('  âœ… Colaborador IE asignado');
 
-  // ─── Prescreen ───
+  // â”€â”€â”€ Prescreen â”€â”€â”€
   const existingQuestions = await prisma.prescreenQuestion.findMany({
     where: { studyId: study.id },
   });
@@ -244,7 +244,7 @@ async function main() {
     await prisma.prescreenQuestion.create({
       data: {
         studyId: study.id,
-        questionText: '¿Tiene experiencia usando aplicaciones móviles regularmente?',
+        questionText: 'Â¿Tiene experiencia usando aplicaciones mÃ³viles regularmente?',
         requiredAnswer: true,
         orderIndex: 0,
       },
@@ -252,15 +252,15 @@ async function main() {
     await prisma.prescreenQuestion.create({
       data: {
         studyId: study.id,
-        questionText: '¿Tiene alguna discapacidad visual no corregida?',
+        questionText: 'Â¿Tiene alguna discapacidad visual no corregida?',
         requiredAnswer: false,
         orderIndex: 1,
       },
     });
   }
-  console.log('  ✅ Preguntas de preselección (2)');
+  console.log('  âœ… Preguntas de preselecciÃ³n (2)');
 
-  // ─── Timeslots ───
+  // â”€â”€â”€ Timeslots â”€â”€â”€
   const existingTimeslots = await prisma.timeslot.findMany({
     where: { studyId: study.id },
   });
@@ -287,21 +287,21 @@ async function main() {
       });
     }
   }
-  console.log('  ✅ Timeslots (5): 1-5 abril 2026');
+  console.log('  âœ… Timeslots (5): 1-5 abril 2026');
 
-  console.log('\n🎉 Seed completado exitosamente!');
-  console.log('\n📋 Usuarios de prueba (contraseña: Sirope2026!):');
-  console.log('   admin@ucr.ac.cr       — Administrador');
-  console.log('   profesor@ucr.ac.cr    — Profesor');
-  console.log('   investigador@ucr.ac.cr — Investigador Principal');
-  console.log('   ejecutor@ucr.ac.cr    — Investigador Ejecutor');
-  console.log('   estudiante@ucr.ac.cr  — Estudiante (B90000)');
-  console.log('   estudiante2@ucr.ac.cr — Estudiante (B90001)');
+  console.log('\nðŸŽ‰ Seed completado exitosamente!');
+  console.log('\nðŸ“‹ Usuarios de prueba (contraseÃ±a: Sirope2026!):');
+  console.log('   admin@universidad.cr       â€” Administrador');
+  console.log('   profesor@universidad.cr    â€” Profesor');
+  console.log('   investigador@universidad.cr â€” Investigador Principal');
+  console.log('   ejecutor@universidad.cr    â€” Investigador Ejecutor');
+  console.log('   estudiante@universidad.cr  â€” Estudiante (B90000)');
+  console.log('   estudiante2@universidad.cr â€” Estudiante (B90001)');
   await prisma.$disconnect();
 }
 
 main()
   .catch(async (error: unknown) => {
-    console.error('❌ Error en seed:', error);
+    console.error('âŒ Error en seed:', error);
     process.exit(1);
   });

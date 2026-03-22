@@ -1,10 +1,10 @@
-/**
- * SIROPE — Sistema de Registro Optativo de Participantes de Estudios
+﻿/**
+ * SIROPE â€” Sistema de Registro Optativo de Participantes de Estudios
  * @author Alexander Barquero Elizondo, Ph.D.
  *
- * Tests — Validaciones Zod
- * Verifica que los schemas de validación acepten datos válidos
- * y rechacen datos inválidos con mensajes en español.
+ * Tests â€” Validaciones Zod
+ * Verifica que los schemas de validaciÃ³n acepten datos vÃ¡lidos
+ * y rechacen datos invÃ¡lidos con mensajes en espaÃ±ol.
  */
 
 import { describe, it, expect } from 'vitest';
@@ -38,19 +38,19 @@ import {
 // ============================================================
 
 describe('Enums del sistema', () => {
-  it('RoleEnum acepta los 5 roles válidos', () => {
+  it('RoleEnum acepta los 5 roles vÃ¡lidos', () => {
     const roles = ['ADMIN', 'PROFESOR', 'INV_PRINCIPAL', 'INV_EJECUTOR', 'ESTUDIANTE'];
     for (const role of roles) {
       expect(RoleEnum.safeParse(role).success).toBe(true);
     }
   });
 
-  it('RoleEnum rechaza roles inválidos', () => {
+  it('RoleEnum rechaza roles invÃ¡lidos', () => {
     expect(RoleEnum.safeParse('SUPERADMIN').success).toBe(false);
     expect(RoleEnum.safeParse('').success).toBe(false);
   });
 
-  it('StudyStatusEnum acepta los 5 estados válidos', () => {
+  it('StudyStatusEnum acepta los 5 estados vÃ¡lidos', () => {
     const statuses = ['DRAFT', 'PENDING_APPROVAL', 'ACTIVE', 'CLOSED', 'REJECTED'];
     for (const status of statuses) {
       expect(StudyStatusEnum.safeParse(status).success).toBe(true);
@@ -89,15 +89,15 @@ describe('Enums del sistema', () => {
 // ============================================================
 
 describe('loginSchema', () => {
-  it('Acepta credenciales válidas', () => {
+  it('Acepta credenciales vÃ¡lidas', () => {
     const result = loginSchema.safeParse({
-      email: 'user@ucr.ac.cr',
+      email: 'user@universidad.cr',
       password: 'Password1',
     });
     expect(result.success).toBe(true);
   });
 
-  it('Rechaza email inválido', () => {
+  it('Rechaza email invÃ¡lido', () => {
     const result = loginSchema.safeParse({
       email: 'not-an-email',
       password: 'Password1',
@@ -105,15 +105,15 @@ describe('loginSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza contraseña corta (<8 caracteres)', () => {
+  it('Rechaza contraseÃ±a corta (<8 caracteres)', () => {
     const result = loginSchema.safeParse({
-      email: 'user@ucr.ac.cr',
+      email: 'user@universidad.cr',
       password: 'Pass1',
     });
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza email vacío', () => {
+  it('Rechaza email vacÃ­o', () => {
     const result = loginSchema.safeParse({ email: '', password: 'Password1' });
     expect(result.success).toBe(false);
   });
@@ -125,20 +125,20 @@ describe('loginSchema', () => {
 
 describe('registerSchema', () => {
   const validRegister = {
-    email: 'nuevo@ucr.ac.cr',
+    email: 'nuevo@universidad.cr',
     password: 'Sirope2026!',
     confirmPassword: 'Sirope2026!',
-    name: 'Juan Pérez',
+    name: 'Juan PÃ©rez',
     role: 'ESTUDIANTE' as const,
     studentId: 'B90123',
   };
 
-  it('Acepta registro válido completo', () => {
+  it('Acepta registro vÃ¡lido completo', () => {
     const result = registerSchema.safeParse(validRegister);
     expect(result.success).toBe(true);
   });
 
-  it('Rechaza contraseña sin mayúscula', () => {
+  it('Rechaza contraseÃ±a sin mayÃºscula', () => {
     const result = registerSchema.safeParse({
       ...validRegister,
       password: 'sirope2026!',
@@ -147,7 +147,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza contraseña sin número', () => {
+  it('Rechaza contraseÃ±a sin nÃºmero', () => {
     const result = registerSchema.safeParse({
       ...validRegister,
       password: 'SiropeTest!',
@@ -156,7 +156,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza contraseña sin minúscula', () => {
+  it('Rechaza contraseÃ±a sin minÃºscula', () => {
     const result = registerSchema.safeParse({
       ...validRegister,
       password: 'SIROPE2026!',
@@ -165,7 +165,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza cuando contraseñas no coinciden', () => {
+  it('Rechaza cuando contraseÃ±as no coinciden', () => {
     const result = registerSchema.safeParse({
       ...validRegister,
       confirmPassword: 'DifferentPass1',
@@ -185,7 +185,7 @@ describe('registerSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza rol inválido', () => {
+  it('Rechaza rol invÃ¡lido', () => {
     const result = registerSchema.safeParse({
       ...validRegister,
       role: 'SUPERADMIN',
@@ -206,17 +206,17 @@ describe('registerSchema', () => {
 // ============================================================
 
 describe('forgotPasswordSchema', () => {
-  it('Acepta email válido', () => {
+  it('Acepta email vÃ¡lido', () => {
     expect(forgotPasswordSchema.safeParse({ email: 'a@b.com' }).success).toBe(true);
   });
 
-  it('Rechaza email inválido', () => {
+  it('Rechaza email invÃ¡lido', () => {
     expect(forgotPasswordSchema.safeParse({ email: 'bad' }).success).toBe(false);
   });
 });
 
 describe('resetPasswordSchema', () => {
-  it('Acepta datos válidos', () => {
+  it('Acepta datos vÃ¡lidos', () => {
     const result = resetPasswordSchema.safeParse({
       token: 'abc123',
       password: 'NewPass123',
@@ -225,7 +225,7 @@ describe('resetPasswordSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('Rechaza contraseñas que no coinciden', () => {
+  it('Rechaza contraseÃ±as que no coinciden', () => {
     const result = resetPasswordSchema.safeParse({
       token: 'abc123',
       password: 'NewPass123',
@@ -241,22 +241,22 @@ describe('resetPasswordSchema', () => {
 
 describe('institutionConfigSchema', () => {
   const validConfig = {
-    name: 'Escuela de Ciencias de la Computación',
+    name: 'Escuela de Ciencias de la ComputaciÃ³n',
     shortName: 'ECCI',
     universityName: 'Universidad de Costa Rica',
     primaryColor: '#4F46E5',
     accentColor: '#F59E0B',
     contactEmail: 'sirope@ecci.ucr.ac.cr',
     timezone: 'America/Costa_Rica',
-    studentIdLabel: 'Carné',
+    studentIdLabel: 'CarnÃ©',
     authMode: 'CREDENTIALS' as const,
   };
 
-  it('Acepta configuración válida', () => {
+  it('Acepta configuraciÃ³n vÃ¡lida', () => {
     expect(institutionConfigSchema.safeParse(validConfig).success).toBe(true);
   });
 
-  it('Rechaza color hexadecimal inválido', () => {
+  it('Rechaza color hexadecimal invÃ¡lido', () => {
     const result = institutionConfigSchema.safeParse({
       ...validConfig,
       primaryColor: 'red',
@@ -264,7 +264,7 @@ describe('institutionConfigSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza modo de auth inválido', () => {
+  it('Rechaza modo de auth invÃ¡lido', () => {
     const result = institutionConfigSchema.safeParse({
       ...validConfig,
       authMode: 'OAUTH',
@@ -278,7 +278,7 @@ describe('institutionConfigSchema', () => {
 // ============================================================
 
 describe('semesterSchema', () => {
-  it('Acepta formato válido I-2026', () => {
+  it('Acepta formato vÃ¡lido I-2026', () => {
     const result = semesterSchema.safeParse({
       name: 'I-2026',
       startDate: '2026-03-09T00:00:00.000Z',
@@ -296,7 +296,7 @@ describe('semesterSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('Rechaza formato inválido', () => {
+  it('Rechaza formato invÃ¡lido', () => {
     const result = semesterSchema.safeParse({
       name: 'Semestre 1',
       startDate: '2026-03-09T00:00:00.000Z',
@@ -320,10 +320,10 @@ describe('semesterSchema', () => {
 // ============================================================
 
 describe('courseSchema', () => {
-  it('Acepta curso válido', () => {
+  it('Acepta curso vÃ¡lido', () => {
     const result = courseSchema.safeParse({
       code: 'CI-1101',
-      name: 'Introducción a la Computación',
+      name: 'IntroducciÃ³n a la ComputaciÃ³n',
       semesterId: 'sem-1',
       maxExtraCredits: 2.0,
       optedIn: true,
@@ -331,7 +331,7 @@ describe('courseSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('Rechaza créditos negativos', () => {
+  it('Rechaza crÃ©ditos negativos', () => {
     const result = courseSchema.safeParse({
       code: 'CI-1101',
       name: 'Test',
@@ -342,7 +342,7 @@ describe('courseSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza créditos mayores a 10', () => {
+  it('Rechaza crÃ©ditos mayores a 10', () => {
     const result = courseSchema.safeParse({
       code: 'CI-1101',
       name: 'Test',
@@ -361,37 +361,37 @@ describe('courseSchema', () => {
 describe('studySchema', () => {
   const validStudy = {
     title: 'Estudio sobre usabilidad de interfaces',
-    description: 'Un estudio completo que examina patrones de interfaz en aplicaciones móviles.',
+    description: 'Un estudio completo que examina patrones de interfaz en aplicaciones mÃ³viles.',
     semesterId: 'sem-1',
     creditsWorth: 1.0,
     estimatedDuration: 45,
   };
 
-  it('Acepta estudio válido', () => {
+  it('Acepta estudio vÃ¡lido', () => {
     expect(studySchema.safeParse(validStudy).success).toBe(true);
   });
 
-  it('Rechaza título muy corto', () => {
+  it('Rechaza tÃ­tulo muy corto', () => {
     const result = studySchema.safeParse({ ...validStudy, title: 'Hola' });
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza descripción muy corta', () => {
+  it('Rechaza descripciÃ³n muy corta', () => {
     const result = studySchema.safeParse({ ...validStudy, description: 'Corto' });
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza créditos menores a 0.5', () => {
+  it('Rechaza crÃ©ditos menores a 0.5', () => {
     const result = studySchema.safeParse({ ...validStudy, creditsWorth: 0.2 });
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza duración menor a 5 minutos', () => {
+  it('Rechaza duraciÃ³n menor a 5 minutos', () => {
     const result = studySchema.safeParse({ ...validStudy, estimatedDuration: 3 });
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza duración mayor a 480 minutos', () => {
+  it('Rechaza duraciÃ³n mayor a 480 minutos', () => {
     const result = studySchema.safeParse({ ...validStudy, estimatedDuration: 500 });
     expect(result.success).toBe(false);
   });
@@ -402,9 +402,9 @@ describe('studySchema', () => {
 // ============================================================
 
 describe('prescreenQuestionSchema', () => {
-  it('Acepta pregunta válida', () => {
+  it('Acepta pregunta vÃ¡lida', () => {
     const result = prescreenQuestionSchema.safeParse({
-      questionText: '¿Tiene experiencia usando apps móviles?',
+      questionText: 'Â¿Tiene experiencia usando apps mÃ³viles?',
       requiredAnswer: true,
       orderIndex: 0,
     });
@@ -422,7 +422,7 @@ describe('prescreenQuestionSchema', () => {
 });
 
 describe('prescreenAnswerSchema', () => {
-  it('Acepta respuesta válida', () => {
+  it('Acepta respuesta vÃ¡lida', () => {
     const result = prescreenAnswerSchema.safeParse({
       questionId: 'q-1',
       answer: true,
@@ -436,7 +436,7 @@ describe('prescreenAnswerSchema', () => {
 // ============================================================
 
 describe('timeslotSchema', () => {
-  it('Acepta timeslot válido', () => {
+  it('Acepta timeslot vÃ¡lido', () => {
     const result = timeslotSchema.safeParse({
       studyId: 'study-1',
       startTime: '2026-04-01T09:00:00.000Z',
@@ -466,7 +466,7 @@ describe('timeslotSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza más de 500 participantes', () => {
+  it('Rechaza mÃ¡s de 500 participantes', () => {
     const result = timeslotSchema.safeParse({
       studyId: 'study-1',
       startTime: '2026-04-01T09:00:00.000Z',
@@ -482,7 +482,7 @@ describe('timeslotSchema', () => {
 // ============================================================
 
 describe('timeslotImportRowSchema', () => {
-  it('Acepta fila válida', () => {
+  it('Acepta fila vÃ¡lida', () => {
     const result = timeslotImportRowSchema.safeParse({
       fecha: '2026-04-01',
       horaInicio: '09:00',
@@ -492,7 +492,7 @@ describe('timeslotImportRowSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('Rechaza fecha vacía', () => {
+  it('Rechaza fecha vacÃ­a', () => {
     const result = timeslotImportRowSchema.safeParse({
       fecha: '',
       horaInicio: '09:00',
@@ -508,7 +508,7 @@ describe('timeslotImportRowSchema', () => {
 // ============================================================
 
 describe('creditAssignmentSchema', () => {
-  it('Acepta asignación válida', () => {
+  it('Acepta asignaciÃ³n vÃ¡lida', () => {
     const result = creditAssignmentSchema.safeParse({
       participationId: 'part-1',
       courseId: 'course-1',
@@ -517,7 +517,7 @@ describe('creditAssignmentSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('Rechaza créditos menores a 0.5', () => {
+  it('Rechaza crÃ©ditos menores a 0.5', () => {
     const result = creditAssignmentSchema.safeParse({
       participationId: 'part-1',
       courseId: 'course-1',
@@ -544,7 +544,7 @@ describe('markCompletionSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('Rechaza estado inválido', () => {
+  it('Rechaza estado invÃ¡lido', () => {
     const result = markCompletionSchema.safeParse({
       participationId: 'part-1',
       status: 'CANCELLED',
@@ -554,7 +554,7 @@ describe('markCompletionSchema', () => {
 });
 
 describe('bulkCompletionSchema', () => {
-  it('Acepta lote válido', () => {
+  it('Acepta lote vÃ¡lido', () => {
     const result = bulkCompletionSchema.safeParse({
       participationIds: ['p1', 'p2', 'p3'],
       status: 'COMPLETED',
@@ -562,7 +562,7 @@ describe('bulkCompletionSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('Rechaza array vacío', () => {
+  it('Rechaza array vacÃ­o', () => {
     const result = bulkCompletionSchema.safeParse({
       participationIds: [],
       status: 'COMPLETED',
@@ -576,7 +576,7 @@ describe('bulkCompletionSchema', () => {
 // ============================================================
 
 describe('studyApprovalSchema', () => {
-  it('Acepta aprobación válida', () => {
+  it('Acepta aprobaciÃ³n vÃ¡lida', () => {
     const result = studyApprovalSchema.safeParse({
       studyId: 'study-1',
       decision: 'APPROVE',
@@ -584,16 +584,16 @@ describe('studyApprovalSchema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('Acepta rechazo con razón', () => {
+  it('Acepta rechazo con razÃ³n', () => {
     const result = studyApprovalSchema.safeParse({
       studyId: 'study-1',
       decision: 'REJECT',
-      rejectionReason: 'El diseño del estudio es inadecuado.',
+      rejectionReason: 'El diseÃ±o del estudio es inadecuado.',
     });
     expect(result.success).toBe(true);
   });
 
-  it('Rechaza rechazo sin razón', () => {
+  it('Rechaza rechazo sin razÃ³n', () => {
     const result = studyApprovalSchema.safeParse({
       studyId: 'study-1',
       decision: 'REJECT',
@@ -601,7 +601,7 @@ describe('studyApprovalSchema', () => {
     expect(result.success).toBe(false);
   });
 
-  it('Rechaza decisión inválida', () => {
+  it('Rechaza decisiÃ³n invÃ¡lida', () => {
     const result = studyApprovalSchema.safeParse({
       studyId: 'study-1',
       decision: 'MAYBE',

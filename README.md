@@ -128,7 +128,7 @@ npm run dev
 
 | Campo | Valor |
 |---|---|
-| Email | `admin@ucr.ac.cr` |
+| Email | `admin@universidad.cr` |
 | Contraseña | `Admin123!` |
 
 > ⚠️ **Cambie esta contraseña inmediatamente en producción.**
