@@ -1,0 +1,375 @@
+// ==========================================================================
+// SIROPE — Sistema de Registro Optativo de Participantes de Estudios
+// Autor: Alexander Barquero Elizondo, Ph.D.
+//
+// Schema de base de datos — Define todos los modelos, relaciones y enums
+// del sistema. Usa SQLite para desarrollo y PostgreSQL para producción.
+// ==========================================================================
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ============================================================
+// Enums (simulados con String ya que SQLite no soporta enums)
+// En producción con PostgreSQL, estos serían enums nativos.
+// Los valores válidos se validan con Zod en la capa de aplicación.
+// ============================================================
+
+// Role:           ADMIN | PROFESOR | INV_PRINCIPAL | INV_EJECUTOR | ESTUDIANTE
+// StudyStatus:    DRAFT | PENDING_APPROVAL | ACTIVE | CLOSED | REJECTED
+// TimeslotStatus: AVAILABLE | FULL | CANCELLED
+// ParticipationStatus: SIGNED_UP | REMINDED | COMPLETED | NO_SHOW | CANCELLED
+// WaitlistStatus: WAITING | NOTIFIED | EXPIRED
+
+// ============================================================
+// Modelos
+// ============================================================
+
+/// Configuración de la institución que despliega SIROPE.
+/// Es un singleton: solo debe existir un registro.
+model InstitutionConfig {
+  id              String  @id @default("singleton")
+  name            String  @default("Mi Institución") // Nombre completo
+  shortName       String  @default("INST") // Siglas
+  universityName  String  @default("Mi Universidad")
+  logoUrl         String  @default("")
+  primaryColor    String  @default("#4F46E5") // Índigo
+  accentColor     String  @default("#F59E0B") // Ámbar
+  contactEmail    String  @default("")
+  website         String  @default("")
+  timezone        String  @default("America/Costa_Rica")
+  studentIdLabel  String  @default("Carné") // Cómo se llama el ID estudiantil
+  authMode        String  @default("CREDENTIALS") // CREDENTIALS | LDAP
+  ldapConfig      String? // JSON string con config LDAP, nullable
+  setupComplete   Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Configuración global del sistema en formato clave-valor.
+/// Permite ajustar parámetros sin redesplegar.
+model SystemConfig {
+  id          String @id @default(cuid())
+  key         String @unique // Ej: MAX_CREDITS_PER_SEMESTER, CANCELLATION_HOURS
+  value       String
+  description String @default("")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+/// Usuario del sistema. El campo role determina los permisos.
+model User {
+  id           String  @id @default(cuid())
+  email        String  @unique
+  passwordHash String
+  name         String
+  role         String  // ADMIN | PROFESOR | INV_PRINCIPAL | INV_EJECUTOR | ESTUDIANTE
+  studentId    String? // Carné o ID estudiantil, solo para ESTUDIANTE
+  active       Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relaciones como profesor
+  courses Course[]
+
+  // Relaciones como investigador principal
+  studiesAsPI Study[]
+
+  // Relaciones como ejecutor
+  collaborations StudyCollaborator[]
+
+  // Relaciones como estudiante
+  enrollments      Enrollment[]
+  participations   Participation[]
+  creditAssignments CreditAssignment[]
+  prescreenAnswers PrescreenAnswer[]
+  waitlistEntries  WaitlistEntry[]
+
+  // Relaciones de auditoría
+  auditLogs AuditLog[]
+
+  // Timeslots creados (IP o IE)
+  createdTimeslots Timeslot[]
+
+  // Participaciones completadas por este investigador
+  completedParticipations Participation[] @relation("CompletedBy")
+
+  // Estudios aprobados como admin
+  approvedStudies Study[] @relation("ApprovedBy")
+
+  // Token para recuperación de contraseña
+  passwordResetTokens PasswordResetToken[]
+
+  // Asignaciones alternativas
+  alternativeAssignments         AlternativeAssignment[] @relation("StudentAltAssignment")
+  reviewedAlternativeAssignments AlternativeAssignment[] @relation("ReviewerAltAssignment")
+}
+
+/// Token para recuperación de contraseña por email.
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  usedAt    DateTime?
+
+  createdAt DateTime @default(now())
+}
+
+/// Semestre académico. Solo uno puede estar activo a la vez.
+model Semester {
+  id        String   @id @default(cuid())
+  name      String   @unique // Ej: "I-2026", "II-2026"
+  startDate DateTime
+  endDate   DateTime
+  active    Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courses Course[]
+  studies Study[]
+}
+
+/// Curso académico dentro de un semestre.
+/// El profesor decide si habilita SIROPE (optedIn) y el máximo de créditos extra.
+model Course {
+  id              String  @id @default(cuid())
+  code            String  // Ej: "CI-1101"
+  name            String
+  semesterId      String
+  semester        Semester @relation(fields: [semesterId], references: [id])
+  professorId     String
+  professor       User     @relation(fields: [professorId], references: [id])
+  maxExtraCredits Float    @default(2.0) // Máximo de puntos extra configurado por el profesor
+  optedIn         Boolean  @default(false) // ¿Habilitó SIROPE?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  enrollments      Enrollment[]
+  creditAssignments CreditAssignment[]
+  alternativeAssignments AlternativeAssignment[]
+
+  @@unique([code, semesterId]) // Un curso no se repite en el mismo semestre
+}
+
+/// Matrícula de un estudiante en un curso.
+model Enrollment {
+  id        String @id @default(cuid())
+  studentId String
+  student   User   @relation(fields: [studentId], references: [id])
+  courseId   String
+  course    Course @relation(fields: [courseId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([studentId, courseId]) // Un estudiante no se matricula dos veces
+}
+
+/// Estudio de investigación creado por un Investigador Principal.
+/// Debe pasar por aprobación del Admin antes de publicarse.
+model Study {
+  id                       String   @id @default(cuid())
+  title                    String
+  description              String
+  principalInvestigatorId  String
+  principalInvestigator    User     @relation(fields: [principalInvestigatorId], references: [id])
+  semesterId               String
+  semester                 Semester @relation(fields: [semesterId], references: [id])
+  creditsWorth             Float    // Créditos que otorga al completar
+  estimatedDuration        Int      // Duración estimada en minutos
+  location                 String   @default("")
+  eligibilityCriteria      String   @default("") // Texto libre de criterios
+  status                   String   @default("DRAFT") // DRAFT | PENDING_APPROVAL | ACTIVE | CLOSED | REJECTED
+  approvedById             String?
+  approvedBy               User?    @relation("ApprovedBy", fields: [approvedById], references: [id])
+  approvedAt               DateTime?
+  rejectionReason          String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  collaborators     StudyCollaborator[]
+  timeslots         Timeslot[]
+  participations    Participation[]
+  prescreenQuestions PrescreenQuestion[]
+}
+
+/// Relación entre un estudio y un Investigador Ejecutor.
+/// El IE puede gestionar timeslots y marcar completitud.
+model StudyCollaborator {
+  id      String @id @default(cuid())
+  studyId String
+  study   Study  @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  userId  String
+  user    User   @relation(fields: [userId], references: [id])
+
+  addedAt DateTime @default(now())
+
+  @@unique([studyId, userId]) // Un ejecutor no se agrega dos veces al mismo estudio
+}
+
+/// Pregunta de preselección para un estudio (formato SÍ/NO).
+/// El IP define qué respuesta se requiere para ser elegible.
+model PrescreenQuestion {
+  id             String  @id @default(cuid())
+  studyId        String
+  study          Study   @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  questionText   String  // Texto de la pregunta
+  requiredAnswer Boolean // true = debe responder SÍ, false = debe responder NO
+  orderIndex     Int     @default(0)
+
+  createdAt DateTime @default(now())
+
+  answers PrescreenAnswer[]
+}
+
+/// Respuesta de un estudiante a una pregunta de preselección.
+model PrescreenAnswer {
+  id         String  @id @default(cuid())
+  questionId String
+  question   PrescreenQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  studentId  String
+  student    User    @relation(fields: [studentId], references: [id])
+  answer     Boolean
+
+  answeredAt DateTime @default(now())
+
+  @@unique([questionId, studentId]) // Un estudiante responde una vez por pregunta
+}
+
+/// Franja horaria disponible para participar en un estudio.
+model Timeslot {
+  id                  String @id @default(cuid())
+  studyId             String
+  study               Study  @relation(fields: [studyId], references: [id], onDelete: Cascade)
+  createdById         String
+  createdBy           User   @relation(fields: [createdById], references: [id])
+  startTime           DateTime
+  endTime             DateTime
+  maxParticipants     Int
+  currentParticipants Int    @default(0)
+  location            String @default("")
+  status              String @default("AVAILABLE") // AVAILABLE | FULL | CANCELLED
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  participations Participation[]
+  waitlistEntries WaitlistEntry[]
+}
+
+/// Entrada en lista de espera cuando un timeslot está lleno.
+model WaitlistEntry {
+  id         String @id @default(cuid())
+  timeslotId String
+  timeslot   Timeslot @relation(fields: [timeslotId], references: [id], onDelete: Cascade)
+  studentId  String
+  student    User     @relation(fields: [studentId], references: [id])
+  position   Int      // Posición en la cola
+  status     String   @default("WAITING") // WAITING | NOTIFIED | EXPIRED
+
+  addedAt DateTime @default(now())
+
+  @@unique([timeslotId, studentId]) // Un estudiante no se pone dos veces en la misma cola
+}
+
+/// Participación de un estudiante en un estudio a través de un timeslot.
+model Participation {
+  id                String   @id @default(cuid())
+  studentId         String
+  student           User     @relation(fields: [studentId], references: [id])
+  studyId           String
+  study             Study    @relation(fields: [studyId], references: [id])
+  timeslotId        String
+  timeslot          Timeslot @relation(fields: [timeslotId], references: [id])
+  status            String   @default("SIGNED_UP") // SIGNED_UP | REMINDED | COMPLETED | NO_SHOW | CANCELLED
+  creditsEarned     Float    @default(0)
+  completedById     String?
+  completedBy       User?    @relation("CompletedBy", fields: [completedById], references: [id])
+  cancellationReason String?
+
+  signedUpAt  DateTime @default(now())
+  completedAt DateTime?
+
+  creditAssignments CreditAssignment[]
+
+  @@unique([studentId, timeslotId]) // Un estudiante no se inscribe dos veces al mismo timeslot
+}
+
+/// Asignación de créditos ganados a un curso específico.
+/// El estudiante decide a cuál de sus cursos asignar cada participación.
+model CreditAssignment {
+  id              String @id @default(cuid())
+  participationId String?
+  participation   Participation? @relation(fields: [participationId], references: [id])
+  studentId       String
+  student         User   @relation(fields: [studentId], references: [id])
+  courseId         String
+  course          Course @relation(fields: [courseId], references: [id])
+  credits         Float
+
+  assignedAt DateTime @default(now())
+
+  // Referencia opcional a asignación alternativa
+  alternativeAssignmentId String?
+  alternativeAssignment   AlternativeAssignment? @relation(fields: [alternativeAssignmentId], references: [id])
+
+  @@unique([participationId, courseId]) // No asignar la misma participación dos veces al mismo curso
+}
+
+/// Registro de auditoría. Cada mutación relevante genera una entrada.
+/// Almacena el estado previo y nuevo para trazabilidad completa.
+model AuditLog {
+  id            String  @id @default(cuid())
+  userId        String
+  user          User    @relation(fields: [userId], references: [id])
+  action        String  // Ej: "CREATE_STUDY", "APPROVE_STUDY", "ASSIGN_CREDIT"
+  entityType    String  // Ej: "Study", "Participation", "CreditAssignment"
+  entityId      String
+  previousState String? // JSON del estado anterior
+  newState      String? // JSON del estado nuevo
+  ipAddress     String  @default("")
+
+  timestamp DateTime @default(now())
+
+  @@index([entityType, entityId])
+  @@index([userId])
+  @@index([timestamp])
+}
+
+/// Asignación alternativa para créditos (ej: ensayo, presentación).
+/// Los estudiantes que no deseen participar en estudios pueden
+/// solicitar una tarea alternativa al profesor.
+model AlternativeAssignment {
+  id                String  @id @default(cuid())
+  studentId         String
+  student           User    @relation("StudentAltAssignment", fields: [studentId], references: [id])
+  courseId          String
+  course            Course  @relation(fields: [courseId], references: [id])
+  description       String  // Descripción de la tarea realizada
+  creditsRequested  Float   // Créditos solicitados
+  status            String  @default("PENDING") // PENDING | APPROVED | REJECTED
+  reviewedById      String?
+  reviewedBy        User?   @relation("ReviewerAltAssignment", fields: [reviewedById], references: [id])
+  reviewedAt        DateTime?
+  feedback          String? // Retroalimentación del profesor
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  creditAssignments CreditAssignment[]
+
+  @@unique([studentId, courseId]) // Un estudiante solo puede tener una solicitud por curso
+}
