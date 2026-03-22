@@ -227,6 +227,33 @@ sirope/
 
 ---
 
+## 🐳 Docker
+
+```bash
+# Opción 1: Docker Compose (recomendado)
+docker compose up -d
+# → http://localhost:3000 (seed automático en primer arranque)
+
+# Opción 2: Build manual
+docker build -t sirope .
+docker run -p 3000:3000 -v sirope-data:/app/data \
+  -e NEXTAUTH_SECRET=$(openssl rand -base64 32) \
+  -e SEED_ON_INIT=true \
+  sirope
+```
+
+Variables de entorno en Docker:
+
+| Variable | Default | Descripción |
+|---|---|---|
+| `NEXTAUTH_SECRET` | — | **Requerido.** Token JWT |
+| `NEXTAUTH_URL` | `http://localhost:3000` | URL pública |
+| `SEED_ON_INIT` | `true` | Crear datos de prueba al iniciar |
+
+> La base de datos SQLite se persiste en el volumen `sirope-data`.
+
+---
+
 ## 🚢 Despliegue en Producción
 
 Ver la guía completa en [DEPLOY.md](./DEPLOY.md), que incluye:
@@ -236,6 +263,16 @@ Ver la guía completa en [DEPLOY.md](./DEPLOY.md), que incluye:
 - Configuración de cron para recordatorios
 - Opciones: Vercel, VPS, Docker
 - Respaldos y actualización
+
+---
+
+## 📖 Documentación
+
+| Documento | Descripción |
+|---|---|
+| [DEPLOY.md](./DEPLOY.md) | Guía de despliegue a producción |
+| [docs/GUIA_USUARIO.md](./docs/GUIA_USUARIO.md) | Manual de usuario por rol |
+| [docs/ROLES.md](./docs/ROLES.md) | Guías detalladas de permisos por rol |
 
 ---
 
