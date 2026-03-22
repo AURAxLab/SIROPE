@@ -461,7 +461,69 @@ export async function updateInstitutionConfig(formData: {
     newState: parsed.data as unknown as Record<string, unknown>,
   });
 
+  // Also update InstitutionConfig model directly (used by auth.ts)
+  await prisma.institutionConfig.upsert({
+    where: { id: 'singleton' },
+    update: {
+      name: parsed.data.name,
+      shortName: parsed.data.shortName,
+      universityName: parsed.data.universityName,
+      contactEmail: parsed.data.contactEmail,
+      timezone: parsed.data.timezone,
+      studentIdLabel: parsed.data.studentIdLabel,
+      authMode: parsed.data.authMode || 'CREDENTIALS',
+    },
+    create: { id: 'singleton' },
+  });
+
   return { success: true };
+}
+
+/**
+ * Guarda la configuración LDAP en InstitutionConfig.
+ * Solo accesible por ADMIN.
+ */
+export async function saveLdapConfig(ldapConfig: Record<string, unknown>): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user) return { success: false, error: 'No autenticado' };
+
+  const role = session.user.role as Role;
+  requirePermission(role, ACTIONS.MANAGE_SYSTEM_CONFIG);
+
+  const ldapJson = JSON.stringify(ldapConfig);
+
+  await prisma.institutionConfig.upsert({
+    where: { id: 'singleton' },
+    update: { ldapConfig: ldapJson },
+    create: { id: 'singleton', ldapConfig: ldapJson },
+  });
+
+  await logAuditEvent({
+    userId: session.user.id,
+    action: 'UPDATE_LDAP_CONFIG',
+    entityType: 'InstitutionConfig',
+    entityId: 'singleton',
+  });
+
+  return { success: true };
+}
+
+/**
+ * Prueba la conexión LDAP con la configuración proporcionada.
+ */
+export async function testLdapConnection(ldapConfig: Record<string, unknown>): Promise<{ success: boolean; message: string }> {
+  const session = await auth();
+  if (!session?.user) return { success: false, message: 'No autenticado' };
+
+  const role = session.user.role as Role;
+  requirePermission(role, ACTIONS.MANAGE_SYSTEM_CONFIG);
+
+  const { testLdapConnection: testLdap } = await import('@/lib/ldap');
+  const { parseLdapConfig } = await import('@/lib/ldap');
+  const config = parseLdapConfig(JSON.stringify(ldapConfig));
+  if (!config) return { success: false, message: 'Configuración LDAP inválida' };
+
+  return testLdap(config);
 }
 
 // ============================================================

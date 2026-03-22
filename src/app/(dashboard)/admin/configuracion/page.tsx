@@ -25,6 +25,12 @@ export default async function ConfiguracionPage() {
     if (found) instConfig[key.toLowerCase()] = found.value;
   }
 
+  // Fetch InstitutionConfig for auth settings
+  const institutionModel = await prisma.institutionConfig.findUnique({
+    where: { id: 'singleton' },
+    select: { authMode: true, ldapConfig: true },
+  });
+
   // Non-institution configs
   const nonInstConfigs = systemConfigs.filter((c) => !c.key.startsWith('INSTITUTION_'));
 
@@ -43,6 +49,8 @@ export default async function ConfiguracionPage() {
           website: instConfig.website || '',
           timezone: instConfig.timezone || 'America/Costa_Rica',
           studentIdLabel: instConfig.studentidlabel || 'Carné',
+          authMode: institutionModel?.authMode || 'CREDENTIALS',
+          ldapConfig: institutionModel?.ldapConfig || null,
         } : null}
         configs={nonInstConfigs.map((c) => ({
           id: c.id,

@@ -3,9 +3,12 @@
  * @author Alexander Barquero Elizondo, Ph.D.
  *
  * Autenticación — Configuración NextAuth.js v5
- * Implementa autenticación con email/contraseña usando bcrypt.
- * La arquitectura está preparada para integrar LDAP/SSO en el futuro
- * mediante el módulo auth-adapter.ts.
+ * Soporta dos modos de autenticación:
+ * - CREDENTIALS: email/contraseña contra la base de datos local (bcrypt)
+ * - LDAP: autenticación contra un servidor LDAP/Active Directory externo
+ *
+ * El modo se configura en Administración → Configuración → authMode.
+ * Los admins locales siempre pueden autenticarse con credentials como fallback.
  */
 
 import NextAuth from 'next-auth';
@@ -14,6 +17,7 @@ import bcryptjs from 'bcryptjs';
 import prisma from './prisma';
 import { loginSchema } from './validations';
 import type { Role } from './validations';
+import { parseLdapConfig, authenticateWithLDAP } from './ldap';
 
 /**
  * Configuración principal de NextAuth.
@@ -29,8 +33,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
 
       /**
-       * Valida las credenciales del usuario contra la base de datos.
-       * Retorna el usuario si las credenciales son válidas, null si no.
+       * Valida las credenciales del usuario.
+       * Si authMode es LDAP, primero intenta LDAP; si falla, intenta
+       * login local para admins como fallback.
+       * Si authMode es CREDENTIALS, usa bcrypt contra la BD.
        */
       async authorize(credentials) {
         // Validar formato de entrada con Zod
@@ -40,28 +46,110 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         const { email, password } = parsed.data;
+        const normalizedEmail = email.toLowerCase();
 
-        // Buscar usuario por email
+        // Leer configuración de autenticación
+        let authMode = 'CREDENTIALS';
+        let ldapConfigJson: string | null = null;
+        try {
+          const config = await prisma.institutionConfig.findUnique({
+            where: { id: 'singleton' },
+            select: { authMode: true, ldapConfig: true },
+          });
+          if (config) {
+            authMode = config.authMode;
+            ldapConfigJson = config.ldapConfig;
+          }
+        } catch {
+          // Si no hay config, usar credentials por defecto
+        }
+
+        // ============================================================
+        // Modo LDAP
+        // ============================================================
+        if (authMode === 'LDAP') {
+          const ldapConfig = parseLdapConfig(ldapConfigJson);
+
+          if (ldapConfig) {
+            const ldapUser = await authenticateWithLDAP(ldapConfig, normalizedEmail, password);
+
+            if (ldapUser) {
+              // Auto-provisioning: crear o actualizar usuario en la BD local
+              let user = await prisma.user.findUnique({
+                where: { email: normalizedEmail },
+              });
+
+              if (!user) {
+                // Crear usuario con rol ESTUDIANTE por defecto
+                user = await prisma.user.create({
+                  data: {
+                    email: normalizedEmail,
+                    name: ldapUser.name,
+                    passwordHash: '', // No se usa con LDAP
+                    role: 'ESTUDIANTE',
+                    studentId: ldapUser.studentId,
+                    active: true,
+                  },
+                });
+                console.log(`[AUTH] Auto-provisioned LDAP user: ${normalizedEmail}`);
+              } else {
+                // Actualizar nombre si cambió en LDAP
+                if (user.name !== ldapUser.name) {
+                  await prisma.user.update({
+                    where: { id: user.id },
+                    data: { name: ldapUser.name },
+                  });
+                }
+              }
+
+              if (!user.active) {
+                return null; // Usuario desactivado por el admin
+              }
+
+              return {
+                id: user.id,
+                email: user.email,
+                name: ldapUser.name || user.name,
+                role: user.role as Role,
+              };
+            }
+          }
+
+          // Fallback: permitir login local para ADMIN (siempre)
+          const adminUser = await prisma.user.findUnique({
+            where: { email: normalizedEmail },
+          });
+          if (adminUser && adminUser.role === 'ADMIN' && adminUser.active && adminUser.passwordHash) {
+            const valid = await bcryptjs.compare(password, adminUser.passwordHash);
+            if (valid) {
+              return {
+                id: adminUser.id,
+                email: adminUser.email,
+                name: adminUser.name,
+                role: adminUser.role as Role,
+              };
+            }
+          }
+
+          return null;
+        }
+
+        // ============================================================
+        // Modo CREDENTIALS (por defecto)
+        // ============================================================
         const user = await prisma.user.findUnique({
-          where: { email: email.toLowerCase() },
+          where: { email: normalizedEmail },
         });
 
-        if (!user) {
+        if (!user || !user.active) {
           return null;
         }
 
-        // Verificar que el usuario esté activo
-        if (!user.active) {
-          return null;
-        }
-
-        // Verificar contraseña con bcrypt
         const isPasswordValid = await bcryptjs.compare(password, user.passwordHash);
         if (!isPasswordValid) {
           return null;
         }
 
-        // Retornar datos del usuario (sin passwordHash)
         return {
           id: user.id,
           email: user.email,
@@ -84,7 +172,6 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   callbacks: {
     /**
      * Agrega el rol y el ID del usuario al token JWT.
-     * Esto permite verificar permisos sin consultar la BD en cada request.
      */
     async jwt({ token, user }) {
       if (user) {
@@ -116,9 +203,6 @@ const BCRYPT_COST = 12;
 
 /**
  * Hashea una contraseña usando bcrypt con costo 12.
- *
- * @param password - Contraseña en texto plano
- * @returns Hash bcrypt de la contraseña
  */
 export async function hashPassword(password: string): Promise<string> {
   return bcryptjs.hash(password, BCRYPT_COST);
@@ -126,10 +210,6 @@ export async function hashPassword(password: string): Promise<string> {
 
 /**
  * Verifica una contraseña contra un hash bcrypt.
- *
- * @param password - Contraseña en texto plano
- * @param hash - Hash bcrypt almacenado
- * @returns true si la contraseña coincide
  */
 export async function verifyPassword(password: string, hash: string): Promise<boolean> {
   return bcryptjs.compare(password, hash);
