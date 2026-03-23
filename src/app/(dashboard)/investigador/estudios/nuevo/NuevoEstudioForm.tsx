@@ -25,6 +25,8 @@ export default function NuevoEstudioForm({ semesterId, semesterName }: Props) {
     estimatedDuration: '30',
     location: '',
     eligibilityCriteria: '',
+    ethicsApproved: false,
+    ethicsNote: '',
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -35,6 +37,11 @@ export default function NuevoEstudioForm({ semesterId, semesterName }: Props) {
     e.preventDefault();
     setError('');
 
+    if (!form.ethicsApproved && !form.ethicsNote.trim()) {
+      setError('Si el estudio no tiene aprobación CEC, debe indicar la justificación.');
+      return;
+    }
+
     startTransition(async () => {
       const result = await createStudy({
         title: form.title,
@@ -44,6 +51,8 @@ export default function NuevoEstudioForm({ semesterId, semesterName }: Props) {
         estimatedDuration: parseInt(form.estimatedDuration, 10),
         location: form.location,
         eligibilityCriteria: form.eligibilityCriteria,
+        ethicsApproved: form.ethicsApproved,
+        ethicsNote: form.ethicsNote,
       });
 
       if (result.success && result.data) {
@@ -112,6 +121,41 @@ export default function NuevoEstudioForm({ semesterId, semesterName }: Props) {
               onChange={handleChange} placeholder="Requisitos del participante (opcional)" rows={3} />
           </div>
 
+          {/* Aprobación Comité Ético */}
+          <div style={{
+            padding: 16, borderRadius: 'var(--radius-md)',
+            background: 'var(--surface-bg)', border: '1px solid var(--surface-border)',
+          }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer', marginBottom: 12 }}>
+              <input
+                type="checkbox"
+                checked={form.ethicsApproved}
+                onChange={(e) => setForm((prev) => ({ ...prev, ethicsApproved: e.target.checked }))}
+                style={{ accentColor: 'var(--accent-primary)' }}
+              />
+              <span style={{ fontWeight: 600 }}>
+                🏛️ Este estudio cuenta con aprobación del Comité Ético Científico (CEC)
+              </span>
+            </label>
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label">
+                {form.ethicsApproved
+                  ? 'Número de acta o resolución del CEC'
+                  : 'Justificación de por qué no requiere aprobación CEC *'}
+              </label>
+              <input
+                className="form-input"
+                name="ethicsNote"
+                value={form.ethicsNote}
+                onChange={handleChange}
+                placeholder={form.ethicsApproved
+                  ? 'Ej: Acta CEC-2026-042'
+                  : 'Ej: Estudio con datos públicos, no involucra datos personales sensibles'}
+                required={!form.ethicsApproved}
+              />
+            </div>
+          </div>
+
           <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
             <a href="/investigador/estudios" className="btn btn-secondary">Cancelar</a>
             <button type="submit" className="btn btn-primary" disabled={isPending}>
@@ -123,3 +167,4 @@ export default function NuevoEstudioForm({ semesterId, semesterName }: Props) {
     </div>
   );
 }
+

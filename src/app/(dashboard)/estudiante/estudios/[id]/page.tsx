@@ -172,6 +172,8 @@ export default async function EstudioDetalle({ params }: Params) {
                 currentParticipants: t._count.participations,
               }))}
               studyId={study.id}
+              ethicsApproved={study.ethicsApproved}
+              ethicsNote={study.ethicsNote || undefined}
             />
           )}
         </div>

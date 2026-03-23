@@ -191,6 +191,8 @@ model Study {
   estimatedDuration        Int      // Duración estimada en minutos
   location                 String   @default("")
   eligibilityCriteria      String   @default("") // Texto libre de criterios
+  ethicsApproved           Boolean  @default(false) // ¿Aprobado por Comité Ético Científico?
+  ethicsNote               String   @default("") // Si no: justificación; si sí: número de acta/resolución
   status                   String   @default("DRAFT") // DRAFT | PENDING_APPROVAL | ACTIVE | CLOSED | REJECTED
   approvedById             String?
   approvedBy               User?    @relation("ApprovedBy", fields: [approvedById], references: [id])

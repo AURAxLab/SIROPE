@@ -170,6 +170,8 @@ export async function createStudy(formData: {
   estimatedDuration: number;
   location?: string;
   eligibilityCriteria?: string;
+  ethicsApproved?: boolean;
+  ethicsNote?: string;
 }): Promise<ActionResult> {
   const session = await auth();
   if (!session?.user) {
@@ -204,6 +206,8 @@ export async function createStudy(formData: {
       estimatedDuration: parsed.data.estimatedDuration,
       location: parsed.data.location || '',
       eligibilityCriteria: parsed.data.eligibilityCriteria || '',
+      ethicsApproved: formData.ethicsApproved ?? false,
+      ethicsNote: formData.ethicsNote || '',
       status: 'DRAFT',
     },
   });
