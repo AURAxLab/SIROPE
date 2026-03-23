@@ -18,6 +18,7 @@ import prisma from './prisma';
 import { loginSchema } from './validations';
 import type { Role } from './validations';
 import { parseLdapConfig, authenticateWithLDAP } from './ldap';
+import { checkRateLimit, recordFailedAttempt, clearAttempts, LOGIN_RATE_LIMIT } from './rate-limit';
 
 /**
  * Configuración principal de NextAuth.
@@ -47,6 +48,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const { email, password } = parsed.data;
         const normalizedEmail = email.toLowerCase();
+
+        // Rate limiting: verificar antes de intentar autenticación
+        const rateCheck = checkRateLimit(normalizedEmail, LOGIN_RATE_LIMIT);
+        if (!rateCheck.allowed) {
+          console.warn(`[Auth] Rate limit: ${normalizedEmail} bloqueado por ${rateCheck.retryAfterSeconds}s`);
+          return null;
+        }
 
         // Leer configuración de autenticación
         let authMode = 'CREDENTIALS';
@@ -122,6 +130,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           if (adminUser && adminUser.role === 'ADMIN' && adminUser.active && adminUser.passwordHash) {
             const valid = await bcryptjs.compare(password, adminUser.passwordHash);
             if (valid) {
+              clearAttempts(normalizedEmail);
               return {
                 id: adminUser.id,
                 email: adminUser.email,
@@ -131,6 +140,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             }
           }
 
+          recordFailedAttempt(normalizedEmail);
           return null;
         }
 
@@ -147,9 +157,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const isPasswordValid = await bcryptjs.compare(password, user.passwordHash);
         if (!isPasswordValid) {
+          recordFailedAttempt(normalizedEmail);
           return null;
         }
 
+        clearAttempts(normalizedEmail);
         return {
           id: user.id,
           email: user.email,
