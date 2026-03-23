@@ -274,6 +274,38 @@ export default function ConfigForm({ institution, configs }: ConfigFormProps) {
           </div>
         )}
       </div>
+
+      {/* Backup */}
+      <div className="card">
+        <h2 style={{ marginBottom: 16 }}>💾 Backup y Mantenimiento</h2>
+        <p style={{ color: 'var(--text-muted)', marginBottom: 16, fontSize: '0.875rem' }}>
+          Descargue una copia de seguridad de la base de datos SQLite. Para PostgreSQL, use <code>pg_dump</code>.
+        </p>
+        <button
+          className="btn btn-primary"
+          onClick={async () => {
+            try {
+              const res = await fetch('/api/admin/backup');
+              if (!res.ok) {
+                const data = await res.json();
+                alert(data.error || 'Error al generar backup');
+                return;
+              }
+              const blob = await res.blob();
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement('a');
+              a.href = url;
+              a.download = res.headers.get('Content-Disposition')?.split('filename="')[1]?.replace('"', '') || 'sirope-backup.db';
+              a.click();
+              URL.revokeObjectURL(url);
+            } catch {
+              alert('Error de conexión al generar backup');
+            }
+          }}
+        >
+          📥 Descargar Backup
+        </button>
+      </div>
     </div>
   );
 }

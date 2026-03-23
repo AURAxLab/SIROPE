@@ -54,6 +54,12 @@ async function main() {
     { key: 'MAX_CREDITS_PER_SEMESTER', value: '4', description: 'Máximo de créditos extra por semestre' },
     { key: 'CANCELLATION_HOURS', value: '24', description: 'Horas para cancelar sin penalización' },
     { key: 'NO_SHOW_PENALTY_DAYS', value: '7', description: 'Días de bloqueo por no-show' },
+    { key: 'SMTP_HOST', value: '', description: 'Servidor SMTP (ej: smtp.gmail.com). Dejar vacío = emails desactivados' },
+    { key: 'SMTP_PORT', value: '587', description: 'Puerto SMTP (587=TLS, 465=SSL)' },
+    { key: 'SMTP_USER', value: '', description: 'Usuario SMTP para autenticación' },
+    { key: 'SMTP_PASS', value: '', description: 'Contraseña SMTP (se almacena cifrada)' },
+    { key: 'SMTP_FROM', value: 'noreply@universidad.cr', description: 'Dirección de envío (From)' },
+    { key: 'REMINDER_HOURS_BEFORE', value: '24', description: 'Horas antes del timeslot para enviar recordatorio' },
   ];
   for (const c of configs) {
     await prisma.systemConfig.upsert({ where: { key: c.key }, update: {}, create: c });
