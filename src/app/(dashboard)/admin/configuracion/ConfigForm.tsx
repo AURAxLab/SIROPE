@@ -18,6 +18,7 @@ interface ConfigFormProps {
     website: string;
     timezone: string;
     studentIdLabel: string;
+    ethicsCommitteeName?: string;
     authMode?: string;
     ldapConfig?: string | null;
   } | null;
@@ -48,6 +49,7 @@ export default function ConfigForm({ institution, configs }: ConfigFormProps) {
     website: institution?.website || '',
     timezone: institution?.timezone || 'America/Costa_Rica',
     studentIdLabel: institution?.studentIdLabel || 'Carné',
+    ethicsCommitteeName: institution?.ethicsCommitteeName || 'Comité Ético Científico (CEC)',
     primaryColor: '#6366f1',
     accentColor: '#f59e0b',
     authMode: institution?.authMode || 'CREDENTIALS',
@@ -138,6 +140,11 @@ export default function ConfigForm({ institution, configs }: ConfigFormProps) {
           <div className="form-group">
             <label className="form-label">Etiqueta de ID estudiantil</label>
             <input className="form-input" name="studentIdLabel" value={instForm.studentIdLabel} onChange={handleInstChange} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Nombre del comité de ética</label>
+            <input className="form-input" name="ethicsCommitteeName" value={instForm.ethicsCommitteeName} onChange={handleInstChange}
+              placeholder="Ej: CEC, IRB, CEI, Comité de Bioética" />
           </div>
           <div className="form-group">
             <label className="form-label">Color primario</label>
