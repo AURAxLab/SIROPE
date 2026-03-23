@@ -52,7 +52,6 @@ COPY --from=builder /app/public ./public
 
 # Copy Prisma schema + seed (needed for db push / seed at runtime)
 COPY --from=builder /app/prisma ./prisma
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
 COPY --from=builder /app/node_modules/prisma ./node_modules/prisma
 COPY --from=builder /app/node_modules/better-sqlite3 ./node_modules/better-sqlite3
