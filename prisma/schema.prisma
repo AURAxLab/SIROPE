@@ -44,10 +44,11 @@ model InstitutionConfig {
   contactEmail    String  @default("")
   website         String  @default("")
   timezone        String  @default("America/Costa_Rica")
-  studentIdLabel  String  @default("Carné") // Cómo se llama el ID estudiantil
-  authMode        String  @default("CREDENTIALS") // CREDENTIALS | LDAP
-  ldapConfig      String? // JSON string con config LDAP, nullable
-  setupComplete   Boolean @default(false)
+  studentIdLabel       String  @default("Carné") // Cómo se llama el ID estudiantil
+  ethicsCommitteeName  String  @default("Comité Ético Científico (CEC)") // Nombre del comité de ética
+  authMode             String  @default("CREDENTIALS") // CREDENTIALS | LDAP
+  ldapConfig           String? // JSON string con config LDAP, nullable
+  setupComplete        Boolean @default(false)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

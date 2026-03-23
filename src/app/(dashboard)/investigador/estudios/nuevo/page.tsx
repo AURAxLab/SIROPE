@@ -15,10 +15,15 @@ export default async function NuevoEstudioPage() {
     redirect('/login');
   }
 
-  const activeSemester = await prisma.semester.findFirst({
-    where: { active: true },
-    select: { id: true, name: true },
-  });
+  const [activeSemester, config] = await Promise.all([
+    prisma.semester.findFirst({
+      where: { active: true },
+      select: { id: true, name: true },
+    }),
+    prisma.institutionConfig.findFirst({
+      select: { ethicsCommitteeName: true },
+    }),
+  ]);
 
   if (!activeSemester) {
     return (
@@ -36,5 +41,12 @@ export default async function NuevoEstudioPage() {
     );
   }
 
-  return <NuevoEstudioForm semesterId={activeSemester.id} semesterName={activeSemester.name} />;
+  return (
+    <NuevoEstudioForm
+      semesterId={activeSemester.id}
+      semesterName={activeSemester.name}
+      ethicsCommitteeName={config?.ethicsCommitteeName || 'Comité Ético Científico (CEC)'}
+    />
+  );
 }
+

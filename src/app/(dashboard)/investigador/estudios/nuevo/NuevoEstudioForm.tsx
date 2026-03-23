@@ -12,9 +12,10 @@ import { createStudy } from '@/app/actions/studies';
 interface Props {
   semesterId: string;
   semesterName: string;
+  ethicsCommitteeName?: string;
 }
 
-export default function NuevoEstudioForm({ semesterId, semesterName }: Props) {
+export default function NuevoEstudioForm({ semesterId, semesterName, ethicsCommitteeName = 'Comité Ético Científico (CEC)' }: Props) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState('');
@@ -38,7 +39,7 @@ export default function NuevoEstudioForm({ semesterId, semesterName }: Props) {
     setError('');
 
     if (!form.ethicsApproved && !form.ethicsNote.trim()) {
-      setError('Si el estudio no tiene aprobación CEC, debe indicar la justificación.');
+      setError(`Si el estudio no tiene aprobación del ${ethicsCommitteeName}, debe indicar la justificación.`);
       return;
     }
 
@@ -134,14 +135,14 @@ export default function NuevoEstudioForm({ semesterId, semesterName }: Props) {
                 style={{ accentColor: 'var(--accent-primary)' }}
               />
               <span style={{ fontWeight: 600 }}>
-                🏛️ Este estudio cuenta con aprobación del Comité Ético Científico (CEC)
+                🏛️ Este estudio cuenta con aprobación del {ethicsCommitteeName}
               </span>
             </label>
             <div className="form-group" style={{ marginBottom: 0 }}>
               <label className="form-label">
                 {form.ethicsApproved
-                  ? 'Número de acta o resolución del CEC'
-                  : 'Justificación de por qué no requiere aprobación CEC *'}
+                  ? `Número de acta o resolución del ${ethicsCommitteeName}`
+                  : `Justificación de por qué no requiere aprobación del ${ethicsCommitteeName} *`}
               </label>
               <input
                 className="form-input"

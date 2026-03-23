@@ -29,20 +29,25 @@ export default async function EstudioDetalle({ params }: Params) {
     redirect('/login');
   }
 
-  const study = await prisma.study.findUnique({
-    where: { id, status: 'ACTIVE' },
-    include: {
-      principalInvestigator: { select: { name: true, email: true } },
-      prescreenQuestions: { orderBy: { orderIndex: 'asc' } },
-      timeslots: {
-        where: { status: 'AVAILABLE', startTime: { gt: new Date() } },
-        orderBy: { startTime: 'asc' },
-        include: {
-          _count: { select: { participations: { where: { status: { not: 'CANCELLED' } } } } },
+  const [study, config] = await Promise.all([
+    prisma.study.findUnique({
+      where: { id, status: 'ACTIVE' },
+      include: {
+        principalInvestigator: { select: { name: true, email: true } },
+        prescreenQuestions: { orderBy: { orderIndex: 'asc' } },
+        timeslots: {
+          where: { status: 'AVAILABLE', startTime: { gt: new Date() } },
+          orderBy: { startTime: 'asc' },
+          include: {
+            _count: { select: { participations: { where: { status: { not: 'CANCELLED' } } } } },
+          },
         },
       },
-    },
-  });
+    }),
+    prisma.institutionConfig.findFirst({
+      select: { ethicsCommitteeName: true },
+    }),
+  ]);
 
   if (!study) {
     redirect('/estudiante/estudios');
@@ -174,6 +179,7 @@ export default async function EstudioDetalle({ params }: Params) {
               studyId={study.id}
               ethicsApproved={study.ethicsApproved}
               ethicsNote={study.ethicsNote || undefined}
+              ethicsCommitteeName={config?.ethicsCommitteeName || 'Comité Ético'}
             />
           )}
         </div>

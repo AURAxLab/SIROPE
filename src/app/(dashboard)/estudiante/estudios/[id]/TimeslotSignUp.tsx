@@ -22,13 +22,14 @@ interface TimeslotSignUpProps {
   studyId: string;
   ethicsApproved?: boolean;
   ethicsNote?: string;
+  ethicsCommitteeName?: string;
 }
 
 /**
  * Lista de timeslots con disclaimer de participación voluntaria
  * y botón de inscripción con capacidad en tiempo real.
  */
-export default function TimeslotSignUp({ timeslots, studyId, ethicsApproved, ethicsNote }: TimeslotSignUpProps) {
+export default function TimeslotSignUp({ timeslots, studyId, ethicsApproved, ethicsNote, ethicsCommitteeName = 'Comité Ético' }: TimeslotSignUpProps) {
   const [isPending, startTransition] = useTransition();
   const [signingUpId, setSigningUpId] = useState<string | null>(null);
   const [error, setError] = useState('');
@@ -77,7 +78,7 @@ export default function TimeslotSignUp({ timeslots, studyId, ethicsApproved, eth
           background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.3)',
           fontSize: '0.8125rem', color: 'var(--text-secondary)',
         }}>
-          ✅ <strong>Aprobado por Comité Ético:</strong> {ethicsNote}
+          ✅ <strong>Aprobado por {ethicsCommitteeName}:</strong> {ethicsNote}
         </div>
       )}
 
