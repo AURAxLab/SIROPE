@@ -6,8 +6,15 @@
 
 import prisma from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 export default async function AboutPage() {
-  const config = await prisma.institutionConfig.findFirst();
+  let config = null;
+  try {
+    config = await prisma.institutionConfig.findFirst();
+  } catch {
+    // DB may not be initialized yet
+  }
 
   return (
     <div style={{

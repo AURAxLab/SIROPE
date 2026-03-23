@@ -34,7 +34,7 @@ export async function GET() {
 
   // Resolver path del archivo
   const relativePath = dbUrl.replace('file:', '');
-  const dbPath = path.resolve(process.cwd(), relativePath);
+  const dbPath = path.resolve(/* turbopackIgnore: true */ process.cwd(), relativePath);
 
   if (!existsSync(dbPath)) {
     return NextResponse.json(
