@@ -37,7 +37,7 @@ export default async function DashboardLayout({
       <Sidebar
         userName={session.user.name || 'Usuario'}
         userRole={role}
-        roleLabel={roleLabel}
+        userEmail={session.user.email || ''}
       />
       <main className={styles.content}>
         <div className={styles.contentInner}>

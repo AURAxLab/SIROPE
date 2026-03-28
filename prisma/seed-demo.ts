@@ -20,7 +20,7 @@ import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 
 async function main() {
   const { PrismaClient } = await import('../src/generated/prisma/client.js');
-  const dbUrl = process.env.DATABASE_URL || 'file:./prisma/dev.db';
+  const dbUrl = process.env.DATABASE_URL || 'file:./data/dev.db';
   const adapter = new PrismaBetterSqlite3({ url: dbUrl });
   const prisma = new PrismaClient({ adapter });
 

@@ -1,40 +1,72 @@
 /**
- * SIROPE — Dashboard layout styles
+ * SIROPE Dashboard Module
+ * "UCR Celeste" — clean dark slate background, centered scrollable surface
  */
 
 .layout {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-deepest);
 }
 
 .content {
   flex: 1;
-  margin-left: var(--sidebar-width);
-  padding: 32px;
-  transition: margin-left var(--transition-normal);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  position: relative;
+  background: var(--bg-base);
+  /* Topographic map pattern for subtle texture */
+  background-image: 
+    linear-gradient(rgba(51, 221, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(51, 221, 255, 0.02) 1px, transparent 1px);
+  background-size: 80px 80px;
+  background-position: center top;
+}
+
+.content::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(circle at top right, rgba(0, 192, 243, 0.05), transparent 40%);
+  pointer-events: none;
+  z-index: 1;
 }
 
 .contentInner {
+  padding: 40px;
   max-width: var(--content-max-width);
   margin: 0 auto;
-  animation: fadeIn 0.4s ease-out;
+  width: 100%;
+  position: relative;
+  z-index: 2;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Animations */
+@keyframes slideUpFade {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.contentInner > * {
+  animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 @media (max-width: 768px) {
+  .layout {
+    flex-direction: column;
+  }
+  
   .content {
-    margin-left: 0;
-    padding: 20px;
-    padding-top: 72px;
+    height: calc(100vh - 60px); 
+    overflow-y: auto;
+  }
+  
+  .contentInner {
+    padding: 24px 16px;
   }
 }

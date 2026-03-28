@@ -1,188 +1,183 @@
 /**
- * SIROPE — Sistema de Registro Optativo de Participantes de Estudios
- * @author Alexander Barquero Elizondo, Ph.D.
- *
- * Sidebar — Navegación principal de la aplicación
- * Componente client-side con menú responsive y role-based navigation.
+ * SIROPE — Componente de Navegación (Sidebar)
+ * Tema: UCR Celeste
  */
 
 'use client';
 
-import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
-import { signOut } from 'next-auth/react';
+import { useState, useEffect } from 'react';
+import { 
+  Home, Users, BookOpen, Calendar, 
+  Settings, UserPlus, CheckSquare, 
+  BarChart2, FileText, ChevronLeft, ChevronRight, Menu, Activity
+} from 'lucide-react';
 import styles from './Sidebar.module.css';
 import NotificationBell from './NotificationBell';
 
-// ============================================================
-// Tipos
-// ============================================================
-
-/** Elemento del menú de navegación. */
-interface NavItem {
-  label: string;
-  href: string;
-  icon: string;
-}
-
-/** Props del Sidebar. */
 interface SidebarProps {
-  userName: string;
   userRole: string;
-  roleLabel: string;
+  userName: string;
+  userEmail: string;
 }
 
-// ============================================================
-// Configuración de navegación por rol
-// ============================================================
+// Menú dinámico basado en rol
+const getNavItems = (role: string) => {
+  switch (role) {
+    case 'ADMIN':
+      return [
+        { href: '/admin', label: 'Dashboard', icon: Home, section: 'General' },
+        { href: '/admin/usuarios', label: 'Usuarios', icon: Users, section: 'Gestión' },
+        { href: '/admin/semestres', label: 'Semestres', icon: Calendar, section: 'Gestión' },
+        { href: '/admin/aprobaciones', label: 'Aprobaciones', icon: CheckSquare, section: 'Operaciones' },
+        { href: '/admin/auditoria', label: 'Auditoría', icon: FileText, section: 'Operaciones' },
+        { href: '/admin/analytics', label: 'Analytics', icon: BarChart2, section: 'Sistema' },
+        { href: '/admin/configuracion', label: 'Configuración', icon: Settings, section: 'Sistema' },
+      ];
+    case 'RESEARCHER':
+      return [
+        { href: '/investigador', label: 'Dashboard', icon: Home, section: 'General' },
+        { href: '/investigador/estudios', label: 'Mis Estudios', icon: BookOpen, section: 'Investigación' },
+        { href: '/investigador/estudios/nuevo', label: 'Nuevo Estudio', icon: FileText, section: 'Investigación' },
+      ];
+    case 'PROFESSOR':
+      return [
+        { href: '/profesor', label: 'Dashboard', icon: Home, section: 'General' },
+        { href: '/profesor/cursos', label: 'Mis Cursos', icon: BookOpen, section: 'Académico' },
+        { href: '/profesor/estudiantes', label: 'Mis Estudiantes', icon: Users, section: 'Académico' },
+      ];
+    case 'STUDENT':
+      return [
+        { href: '/estudiante', label: 'Dashboard', icon: Home, section: 'General' },
+        { href: '/estudiante/estudios', label: 'Estudios Disponibles', icon: BookOpen, section: 'Participación' },
+        { href: '/estudiante/historial', label: 'Mi Historial', icon: Activity, section: 'Participación' },
+      ];
+    default:
+      return [];
+  }
+};
 
-/**
- * Define los ítems de navegación para cada rol.
- */
-function getNavItems(role: string): NavItem[] {
-  const items: Record<string, NavItem[]> = {
-    ADMIN: [
-      { label: 'Dashboard', href: '/admin', icon: '📊' },
-      { label: 'Usuarios', href: '/admin/usuarios', icon: '👥' },
-      { label: 'Semestres', href: '/admin/semestres', icon: '📅' },
-      { label: 'Aprobaciones', href: '/admin/aprobaciones', icon: '✅' },
-      { label: 'Configuración', href: '/admin/configuracion', icon: '⚙️' },
-      { label: 'Analytics', href: '/admin/analytics', icon: '📈' },
-      { label: 'Auditoría', href: '/admin/auditoria', icon: '🔍' },
-    ],
-    PROFESOR: [
-      { label: 'Dashboard', href: '/profesor', icon: '📊' },
-      { label: 'Mis Cursos', href: '/profesor/cursos', icon: '📚' },
-      { label: 'Créditos', href: '/profesor/creditos', icon: '🏆' },
-    ],
-    INV_PRINCIPAL: [
-      { label: 'Dashboard', href: '/investigador', icon: '📊' },
-      { label: 'Mis Estudios', href: '/investigador/estudios', icon: '🔬' },
-      { label: 'Timeslots', href: '/investigador/timeslots', icon: '🕐' },
-      { label: 'Colaboradores', href: '/investigador/colaboradores', icon: '🤝' },
-    ],
-    INV_EJECUTOR: [
-      { label: 'Dashboard', href: '/investigador', icon: '📊' },
-      { label: 'Estudios', href: '/investigador/estudios', icon: '🔬' },
-      { label: 'Timeslots', href: '/investigador/timeslots', icon: '🕐' },
-    ],
-    ESTUDIANTE: [
-      { label: 'Dashboard', href: '/estudiante', icon: '📊' },
-      { label: 'Estudios', href: '/estudiante/estudios', icon: '🔬' },
-      { label: 'Mis Inscripciones', href: '/estudiante/inscripciones', icon: '📋' },
-      { label: 'Créditos', href: '/estudiante/creditos', icon: '🏆' },
-      { label: 'Historial', href: '/estudiante/historial', icon: '📜' },
-    ],
-  };
-
-  return items[role] || [];
-}
-
-// ============================================================
-// Componente
-// ============================================================
-
-/**
- * Sidebar de navegación principal.
- * Colapsable en mobile, con indicador de ruta activa.
- */
-export default function Sidebar({ userName, userRole, roleLabel }: SidebarProps) {
-  const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+export default function Sidebar({ userRole, userName, userEmail }: SidebarProps) {
   const pathname = usePathname();
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const navItems = getNavItems(userRole);
 
-  /**
-   * Determina si una ruta está activa.
-   */
-  function isActive(href: string): boolean {
-    if (href === '/admin' || href === '/profesor' || href === '/investigador' || href === '/estudiante') {
-      return pathname === href;
-    }
-    return pathname.startsWith(href);
-  }
+  const sections = Array.from(new Set(navItems.map(item => item.section)));
+  
+  // Responsive check
+  useEffect(() => {
+    const checkWidth = () => {
+      if (window.innerWidth < 768) {
+        setIsCollapsed(false);
+      }
+    };
+    checkWidth();
+    window.addEventListener('resize', checkWidth);
+    return () => window.removeEventListener('resize', checkWidth);
+  }, []);
 
   return (
     <>
-      {/* Botón mobile toggle */}
-      <button
-        className={styles.mobileToggle}
-        onClick={() => setMobileOpen(!mobileOpen)}
-        aria-label="Menú de navegación"
-      >
-        <span className={styles.hamburger} data-open={mobileOpen} />
-      </button>
+      {/* Mobile Header (Only visible on small screens) */}
+      <div className="mobile-header" style={{
+        display: 'none',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: '0 16px',
+        height: '60px',
+        background: 'var(--bg-deepest)',
+        borderBottom: '1px solid var(--surface-border)',
+        position: 'sticky',
+        top: 0,
+        zIndex: 40
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <button 
+            onClick={() => setIsMobileOpen(true)}
+            style={{ background: 'none', border: 'none', color: 'var(--celeste-400)' }}
+          >
+            <Menu size={24} />
+          </button>
+          <div className={styles.brand}>
+            <div className={styles.logo}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <span style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)', fontSize: '1.25rem' }}>SIROPE</span>
+          </div>
+        </div>
+        <NotificationBell role={userRole} />
+      </div>
 
-      {/* Overlay mobile */}
-      {mobileOpen && (
-        <div
-          className={styles.overlay}
-          onClick={() => setMobileOpen(false)}
+      {isMobileOpen && (
+        <div 
+          className={styles.sidebarOverlay} 
+          onClick={() => setIsMobileOpen(false)}
         />
       )}
 
-      {/* Sidebar */}
-      <aside
-        className={styles.sidebar}
-        data-collapsed={collapsed}
-        data-mobile-open={mobileOpen}
+      <aside 
+        className={`${styles.sidebar} ${isCollapsed ? styles.sidebarCollapsed : ''} ${isMobileOpen ? 'sidebar-open' : ''}`}
       >
-        {/* Branding */}
-        <div className={styles.brand}>
-          <div className={styles.brandLogo}>🧪</div>
-          {!collapsed && <span className={styles.brandName}>SIROPE</span>}
+        <div className={styles.header}>
+          <Link href="/" className={styles.brand}>
+            <div className={styles.logo}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <span className={styles.brandName}>SIROPE</span>
+          </Link>
+          <button 
+            className={styles.toggleBtn}
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            aria-label={isCollapsed ? "Expandir menú" : "Contraer menú"}
+          >
+            {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
         </div>
 
-        {/* Navegación */}
         <nav className={styles.nav}>
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`${styles.navItem} ${isActive(item.href) ? styles.navItemActive : ''}`}
-              onClick={() => setMobileOpen(false)}
-              title={collapsed ? item.label : undefined}
-            >
-              <span className={styles.navIcon}>{item.icon}</span>
-              {!collapsed && <span className={styles.navLabel}>{item.label}</span>}
-              {isActive(item.href) && <span className={styles.activeIndicator} />}
-            </Link>
+          {sections.map(section => (
+            <div key={section} className={styles.navSection}>
+              <div className={styles.sectionTitle}>{section}</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                {navItems.filter(item => item.section === section).map(item => {
+                  const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+                  const Icon = item.icon;
+                  
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={`${styles.navItem} ${isActive ? styles.navItemActive : ''}`}
+                      onClick={() => setIsMobileOpen(false)}
+                      title={isCollapsed ? item.label : undefined}
+                    >
+                      <Icon className={styles.navIcon} size={20} />
+                      <span className={styles.navLabel}>{item.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
           ))}
         </nav>
 
-        {/* Footer del sidebar */}
-        <div className={styles.footer}>
-          {/* Perfil del usuario */}
-          <div className={styles.userInfo}>
-            <div className={styles.avatar}>
-              {userName.charAt(0).toUpperCase()}
-            </div>
-            {!collapsed && (
-              <div className={styles.userDetails}>
-                <span className={styles.userName}>{userName}</span>
-                <span className={styles.userRole}>{roleLabel}</span>
-              </div>
-            )}
+        <div className={styles.userInfo}>
+          <div className={styles.avatar}>
+            {userName.charAt(0).toUpperCase()}
           </div>
-
-          {/* Botones de control */}
-          <div className={styles.footerActions}>
-            <NotificationBell role={userRole} />
-            <button
-              className={styles.collapseBtn}
-              onClick={() => setCollapsed(!collapsed)}
-              title={collapsed ? 'Expandir' : 'Colapsar'}
-            >
-              {collapsed ? '▶' : '◀'}
-            </button>
-            <button
-              className={styles.logoutBtn}
-              onClick={() => signOut({ callbackUrl: '/login' })}
-              title="Cerrar sesión"
-            >
-              {collapsed ? '🚪' : '🚪 Salir'}
-            </button>
+          <div className={styles.userDetails}>
+            <span className={styles.userName} title={userName}>{userName}</span>
+            <span className={styles.userRole}>
+              {userRole === 'ADMIN' ? 'Administrador' : 
+               userRole === 'RESEARCHER' ? 'Investigador' : 
+               userRole === 'PROFESSOR' ? 'Profesor' : 'Estudiante'}
+            </span>
           </div>
         </div>
       </aside>

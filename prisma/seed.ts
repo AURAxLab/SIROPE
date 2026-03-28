@@ -1,4 +1,4 @@
-﻿/**
+/**
  * SIROPE â€” Sistema de Registro Optativo de Participantes de Estudios
  * @author Alexander Barquero Elizondo, Ph.D.
  *
@@ -23,7 +23,7 @@ async function main() {
   const { PrismaClient } = await import('../src/generated/prisma/client.js');
 
   // Crear adaptador SQLite y cliente Prisma
-  const dbUrl = process.env.DATABASE_URL || 'file:./prisma/dev.db';
+  const dbUrl = process.env.DATABASE_URL || 'file:./data/dev.db';
   const adapter = new PrismaBetterSqlite3({ url: dbUrl });
   const prisma = new PrismaClient({ adapter });
 

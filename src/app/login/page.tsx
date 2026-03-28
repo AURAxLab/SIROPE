@@ -1,9 +1,6 @@
 /**
- * SIROPE — Sistema de Registro Optativo de Participantes de Estudios
- * @author Alexander Barquero Elizondo, Ph.D.
- *
- * Página de Login — Autenticación de usuarios
- * Pantalla de inicio de sesión con diseño premium y glassmorphism.
+ * SIROPE Login Page
+ * "UCR Celeste" — clean typography, glassmorphism panel.
  */
 
 'use client';
@@ -12,20 +9,12 @@ import { useState } from 'react';
 import { signIn } from 'next-auth/react';
 import styles from './login.module.css';
 
-/**
- * Página de login con diseño visual premium.
- * Incluye formulario con validación y manejo de errores.
- */
 export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  /**
-   * Maneja el envío del formulario de login.
-   * Usa NextAuth signIn con redirect manual.
-   */
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError('');
@@ -39,105 +28,101 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        setError('Correo o contraseña incorrectos');
+        setError('Correo institucional o contraseña incorrectos.');
       } else {
-        // Redirigir al dashboard correspondiente
         window.location.href = '/';
       }
     } catch {
-      setError('Error al iniciar sesión. Intente de nuevo.');
+      setError('Error al iniciar sesión. Verifique su conexión.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <main className={styles.container}>
-      {/* Fondo con gradiente y orbes decorativos */}
-      <div className={styles.background}>
-        <div className={styles.orb1} />
-        <div className={styles.orb2} />
-        <div className={styles.orb3} />
+    <div className={styles.loginWrapper}>
+      <div className={styles.pageBg}></div>
+      
+      {/* Animated UCR colors background orbs */}
+      <div className={styles.ambientOrbs}>
+        <div className={styles.orb1}></div>
+        <div className={styles.orb2}></div>
       </div>
 
-      <div className={styles.card}>
-        {/* Logo y branding */}
-        <div className={styles.header}>
-          <div className={styles.logoContainer}>
-            <span className={styles.logo}>🧪</span>
+      <div className={styles.loginCard}>
+        <div className={styles.brandHeader}>
+          <div className={styles.logoIcon}>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+            </svg>
           </div>
-          <h1 className={styles.title}>SIROPE</h1>
-          <p className={styles.subtitle}>
-            Sistema de Registro Optativo de<br />Participantes de Estudios
-          </p>
+          <h1 className={styles.brandTitle}>SIROPE</h1>
+          <p className={styles.brandSubtitle}>Universidad de Costa Rica</p>
         </div>
 
-        {/* Formulario */}
-        <form onSubmit={handleSubmit} className={styles.form}>
+        <form onSubmit={handleSubmit} className={styles.loginForm}>
           {error && (
-            <div className={styles.alert} role="alert">
-              <span className={styles.alertIcon}>⚠️</span>
-              {error}
+            <div className={styles.errorBanner}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+              </svg>
+              <span>{error}</span>
             </div>
           )}
 
-          <div className="form-group">
-            <label htmlFor="email" className="form-label">
-              Correo electrónico
-            </label>
+          <div className={styles.inputGroup}>
+            <svg className={styles.inputIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+              <polyline points="22,6 12,13 2,6"/>
+            </svg>
             <input
-              id="email"
               type="email"
-              className="form-input"
-              placeholder="usuario@universidad.cr"
+              className={styles.inputField}
+              placeholder="correo@ucr.ac.cr"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              autoComplete="email"
-              autoFocus
             />
           </div>
 
-          <div className="form-group">
-            <label htmlFor="password" className="form-label">
-              Contraseña
-            </label>
+          <div className={styles.inputGroup}>
+            <svg className={styles.inputIcon} width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
             <input
-              id="password"
               type="password"
-              className="form-input"
-              placeholder="••••••••"
+              className={styles.inputField}
+              placeholder="Contraseña"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              autoComplete="current-password"
-              minLength={8}
             />
           </div>
 
-          <button
-            type="submit"
-            className={`btn btn-primary btn-lg ${styles.submitBtn}`}
-            disabled={loading}
+          <button 
+            type="submit" 
+            className={styles.submitBtn} 
+            disabled={loading || !email.trim() || !password.trim()}
           >
             {loading ? (
-              <>
-                <span className={styles.spinner} />
+              <span style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <svg className="spinner" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+                </svg>
                 Ingresando...
-              </>
+              </span>
             ) : (
-              'Iniciar sesión'
+              'Iniciar Sesión'
+            )}
+            {!loading && (
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+              </svg>
             )}
           </button>
         </form>
-
-        <p className={styles.footer}>
-          ¿Olvidó su contraseña?{' '}
-          <a href="/recuperar" className={styles.link}>
-            Recuperar acceso
-          </a>
-        </p>
       </div>
-    </main>
+    </div>
   );
 }
