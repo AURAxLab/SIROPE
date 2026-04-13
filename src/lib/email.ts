@@ -4,8 +4,8 @@
  *
  * Servicio de Email
  * Gestiona el envío de correos electrónicos del sistema.
- * En desarrollo, los correos se loguean a la consola.
- * En producción, se enviaron a través de un servicio SMTP configurable.
+ * En desarrollo, los correos no se envían.
+ * En producción, se envían a través de un servicio SMTP configurable.
  */
 
 // ============================================================
@@ -38,7 +38,7 @@ interface EmailResult {
 
 /**
  * Envía un correo electrónico.
- * En modo desarrollo, solo loguea el contenido a la consola.
+ * En modo desarrollo, simula el envío sin enviar el correo.
  * En producción, usa SMTP configurado en variables de entorno.
  *
  * @param params - Datos del correo a enviar
@@ -47,14 +47,8 @@ interface EmailResult {
 export async function sendEmail(params: EmailParams): Promise<EmailResult> {
   const { to, subject, text, html } = params;
 
-  // En desarrollo, solo loguear
+  // En desarrollo, no enviar correos
   if (process.env.NODE_ENV === 'development') {
-    console.log('═══════════════════════════════════════');
-    console.log('📧 EMAIL (desarrollo - no enviado)');
-    console.log(`   Para: ${to}`);
-    console.log(`   Asunto: ${subject}`);
-    console.log(`   Contenido: ${text}`);
-    console.log('═══════════════════════════════════════');
     return { success: true };
   }
 
