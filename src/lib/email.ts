@@ -47,14 +47,8 @@ interface EmailResult {
 export async function sendEmail(params: EmailParams): Promise<EmailResult> {
   const { to, subject, text, html } = params;
 
-  // En desarrollo, solo loguear
+  // En desarrollo, no enviar
   if (process.env.NODE_ENV === 'development') {
-    console.log('═══════════════════════════════════════');
-    console.log('📧 EMAIL (desarrollo - no enviado)');
-    console.log(`   Para: ${to}`);
-    console.log(`   Asunto: ${subject}`);
-    console.log(`   Contenido: ${text}`);
-    console.log('═══════════════════════════════════════');
     return { success: true };
   }
 
