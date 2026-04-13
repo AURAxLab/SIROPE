@@ -49,12 +49,6 @@ export async function sendEmail(params: EmailParams): Promise<EmailResult> {
 
   // En desarrollo, solo loguear
   if (process.env.NODE_ENV === 'development') {
-    console.log('═══════════════════════════════════════');
-    console.log('📧 EMAIL (desarrollo - no enviado)');
-    console.log(`   Para: ${to}`);
-    console.log(`   Asunto: ${subject}`);
-    console.log(`   Contenido: ${text}`);
-    console.log('═══════════════════════════════════════');
     return { success: true };
   }
 
