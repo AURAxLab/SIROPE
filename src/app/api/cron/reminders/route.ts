@@ -14,6 +14,7 @@
 
 import { NextResponse } from 'next/server';
 import { processReminders } from '@/app/actions/notifications';
+import { timingSafeEqual, createHash } from 'crypto';
 
 /**
  * POST /api/cron/reminders
@@ -32,7 +33,13 @@ export async function POST(request: Request) {
     );
   }
 
-  if (authHeader !== `Bearer ${expectedToken}`) {
+  const expectedAuthHeader = `Bearer ${expectedToken}`;
+  const providedAuthHeader = authHeader || '';
+
+  const expectedHash = createHash('sha256').update(expectedAuthHeader).digest();
+  const providedHash = createHash('sha256').update(providedAuthHeader).digest();
+
+  if (!timingSafeEqual(expectedHash, providedHash)) {
     return NextResponse.json(
       { error: 'No autorizado' },
       { status: 401 }
