@@ -12,6 +12,7 @@
 import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { requirePermission, ACTIONS } from '@/lib/permissions';
+import { notifyWaitlistPromotion } from './notifications';
 import { markCompletionSchema, bulkCompletionSchema } from '@/lib/validations';
 import { logAuditEvent } from '@/lib/audit';
 import type { Role } from '@/lib/validations';
@@ -253,7 +254,7 @@ export async function cancelSignUp(
       where: { id: nextInWaitlist.id },
       data: { status: 'NOTIFIED' },
     });
-    // TODO: Enviar email de notificación al estudiante en waitlist
+    await notifyWaitlistPromotion(nextInWaitlist.id);
   }
 
   await logAuditEvent({
