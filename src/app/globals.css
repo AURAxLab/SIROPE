@@ -22,12 +22,12 @@
    ============================================================ */
 
 :root {
-  /* Core Background Palette — derived from Azul UCR (Pantone 2945C #005da4) */
-  --bg-deepest: #021226;
-  --bg-base: #041a34;
-  --bg-raised: #0a2647;
-  --bg-elevated: #12345c;
-  --bg-surface: #1c4470;
+  /* Core Background Palette — Organic Light Mode */
+  --bg-deepest: #e2e8f0;
+  --bg-base: #f8fafc;
+  --bg-raised: #ffffff;
+  --bg-elevated: #ffffff;
+  --bg-surface: #f1f5f9;
 
   /* Primary Accent — Celeste UCR (Pantone 298C) */
   --celeste-50: #e0f6ff;
@@ -58,20 +58,20 @@
   --color-info: #1ac8f8;
   --color-info-dim: rgba(26, 200, 248, 0.12);
 
-  /* Surface — borders tinted with Azul UCR */
+  /* Surface — Borders */
   --surface-bg: var(--bg-base);
   --surface-card: var(--bg-raised);
   --surface-elevated: var(--bg-elevated);
-  --surface-border: rgba(0, 93, 164, 0.22);
-  --surface-border-strong: rgba(0, 154, 204, 0.28);
-  --surface-hover: rgba(0, 192, 243, 0.08);
+  --surface-border: #e2e8f0;
+  --surface-border-strong: #cbd5e1;
+  --surface-hover: rgba(0, 192, 243, 0.05);
 
-  /* Text */
-  --text-primary: #eef3f8;
-  --text-secondary: #8faec9;
-  --text-muted: #5a7b9a;
-  --text-inverse: #021226;
-  --text-accent: var(--celeste-400);
+  /* Text — High Contrast for Light Mode */
+  --text-primary: #0f172a;
+  --text-secondary: #334155;
+  --text-muted: #64748b;
+  --text-inverse: #ffffff;
+  --text-accent: var(--celeste-700);
 
   /* Gradients — UCR tri-color harmonics */
   --gradient-primary: linear-gradient(135deg, #005da4, #00c0f3, #4dd4ff);
@@ -80,24 +80,24 @@
   --gradient-oro: linear-gradient(135deg, #dbbf3e, #ffe06a, #fff1a8);
   --gradient-subtle: linear-gradient(135deg, var(--bg-base), var(--bg-raised));
 
-  /* Glassmorphism */
-  --glass-bg: rgba(4, 26, 52, 0.82);
-  --glass-border: rgba(0, 154, 204, 0.18);
-  --glass-blur: 20px;
+  /* Glassmorphism — Light & Airy */
+  --glass-bg: rgba(255, 255, 255, 0.75);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-blur: 24px;
 
-  /* Shadows — azul-tinted */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 93, 164, 0.06);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 93, 164, 0.08);
-  --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 93, 164, 0.1);
-  --shadow-glow: 0 0 24px rgba(0, 192, 243, 0.25);
-  --shadow-glow-oro: 0 0 24px rgba(255, 224, 106, 0.22);
+  /* Shadows — Soft ambient light occlusion */
+  --shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+  --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.05), 0 1px 3px rgba(0, 93, 164, 0.02);
+  --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(0, 93, 164, 0.03);
+  --shadow-xl: 0 24px 48px rgba(15, 23, 42, 0.1), 0 4px 12px rgba(0, 93, 164, 0.05);
+  --shadow-glow: 0 8px 24px rgba(0, 93, 164, 0.12);
+  --shadow-glow-oro: 0 8px 24px rgba(2dbbf3e, 0.18);
 
-  /* Borders */
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 14px;
-  --radius-xl: 20px;
+  /* Borders / Organic Shapes */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
   --radius-full: 9999px;
 
   /* Typography */
@@ -146,7 +146,7 @@ body::after {
   inset: 0;
   z-index: 9998;
   pointer-events: none;
-  opacity: 0.028;
+  opacity: 0.015;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 256px 256px;

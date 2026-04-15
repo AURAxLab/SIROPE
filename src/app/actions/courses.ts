@@ -326,3 +326,62 @@ export async function deleteCourse(courseId: string): Promise<ActionResult> {
 
   return { success: true };
 }
+
+/**
+ * Elimina a un estudiante de un curso (Purga de Matrícula).
+ * Elimina tanto su matrícula como los créditos que haya asignado a este curso.
+ * Los créditos vuelven a estar disponibles en la billetera del estudiante.
+ * Solo el profesor dueño o un ADMIN puede hacer esto.
+ *
+ * @param courseId - ID del curso
+ * @param studentId - ID del estudiante
+ */
+export async function removeStudentFromCourse(courseId: string, studentId: string): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user) {
+    return { success: false, error: 'No autenticado' };
+  }
+
+  const role = session.user.role as Role;
+
+  const course = await prisma.course.findUnique({
+    where: { id: courseId },
+  });
+
+  if (!course) {
+    return { success: false, error: 'Curso no encontrado' };
+  }
+
+  if (role !== 'ADMIN' && course.professorId !== session.user.id) {
+    return { success: false, error: 'No tiene permiso para gestionar este curso' };
+  }
+
+  const enrollment = await prisma.enrollment.findUnique({
+    where: { studentId_courseId: { studentId, courseId } }
+  });
+
+  if (!enrollment) {
+    return { success: false, error: 'El estudiante no está matriculado en este curso' };
+  }
+
+  // Eliminar asignaciones de créditos para este curso (devuelve los créditos a la "billetera")
+  await prisma.creditAssignment.deleteMany({
+    where: { studentId, courseId }
+  });
+
+  // Eliminar matrícula
+  await prisma.enrollment.delete({
+    where: { id: enrollment.id }
+  });
+
+  await logAuditEvent({
+    userId: session.user.id,
+    action: 'REMOVE_STUDENT_FROM_COURSE',
+    entityType: 'Course',
+    entityId: courseId,
+    previousState: { studentId },
+    newState: { action: 'Purged from course' },
+  });
+
+  return { success: true };
+}

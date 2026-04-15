@@ -37,7 +37,7 @@ export default async function EstudioDetalle({ params }: Params) {
         principalInvestigator: { select: { name: true, email: true } },
         prescreenQuestions: { orderBy: { orderIndex: 'asc' } },
         timeslots: {
-          where: { status: 'AVAILABLE', startTime: { gt: new Date() } },
+          where: { status: { in: ['AVAILABLE', 'FULL'] }, startTime: { gt: new Date() } },
           orderBy: { startTime: 'asc' },
           include: {
             _count: { select: { participations: { where: { status: { not: 'CANCELLED' } } } } },

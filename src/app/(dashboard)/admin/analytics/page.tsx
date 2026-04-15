@@ -7,6 +7,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import type { Role } from '@/lib/validations';
 import prisma from '@/lib/prisma';
+import ExportCSV from '@/components/ExportCSV';
 
 const STATUS_LABELS: Record<string, { label: string; badge: string }> = {
   DRAFT: { label: 'Borrador', badge: 'badge-neutral' },
@@ -88,6 +89,10 @@ export default async function AnalyticsPage() {
         <p style={{ color: 'var(--text-muted)', marginTop: 4 }}>
           Semestre: {activeSemester.name} · {activeSemester.startDate.toLocaleDateString('es-CR', { month: 'short', year: 'numeric' })} – {activeSemester.endDate.toLocaleDateString('es-CR', { month: 'short', year: 'numeric' })}
         </p>
+        <div style={{ display: 'flex', gap: 8, marginTop: 16 }}>
+          <ExportCSV type="participations" semesterId={activeSemester.id} label="📥 Maestro: Participaciones" />
+          <ExportCSV type="credits" semesterId={activeSemester.id} label="📥 Maestro: Créditos" />
+        </div>
       </div>
 
       {/* Users breakdown */}

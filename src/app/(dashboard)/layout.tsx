@@ -12,6 +12,7 @@ import { auth } from '@/lib/auth';
 import { getDashboardPathForRole, ROLE_LABELS } from '@/lib/permissions';
 import Sidebar from '@/components/Sidebar';
 import type { Role } from '@/lib/validations';
+import prisma from '@/lib/prisma';
 import styles from './dashboard.module.css';
 
 /**
@@ -32,12 +33,16 @@ export default async function DashboardLayout({
   const role = session.user.role as Role;
   const roleLabel = ROLE_LABELS[role] || 'Usuario';
 
+  const logoConfig = await prisma.systemConfig.findUnique({ where: { key: 'INSTITUTION_LOGOURL' } });
+  const logoUrl = logoConfig?.value || '/logo-institucion.svg';
+
   return (
     <div className={styles.layout}>
       <Sidebar
         userName={session.user.name || 'Usuario'}
         userRole={role}
         userEmail={session.user.email || ''}
+        logoUrl={logoUrl}
       />
       <main className={styles.content}>
         <div className={styles.contentInner}>

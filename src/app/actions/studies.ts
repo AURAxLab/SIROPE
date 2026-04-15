@@ -16,6 +16,7 @@ import { requirePermission, ACTIONS } from '@/lib/permissions';
 import { studySchema, studyApprovalSchema } from '@/lib/validations';
 import { logAuditEvent } from '@/lib/audit';
 import type { Role } from '@/lib/validations';
+import { sendStudyPendingApproval } from '@/lib/email';
 
 // ============================================================
 // Tipos
@@ -418,6 +419,21 @@ export async function submitStudyForApproval(studyId: string): Promise<ActionRes
     previousState: { status: 'DRAFT' },
     newState: { status: 'PENDING_APPROVAL' },
   });
+
+  // Notificar a todos los administradores activos
+  const admins = await prisma.user.findMany({
+    where: { role: 'ADMIN', active: true },
+    select: { name: true, email: true },
+  });
+
+  for (const admin of admins) {
+    await sendStudyPendingApproval(
+      admin.email,
+      admin.name,
+      study.title,
+      session.user.name || 'Investigador'
+    );
+  }
 
   return { success: true, data: updated };
 }

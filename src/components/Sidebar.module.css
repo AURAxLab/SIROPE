@@ -14,7 +14,7 @@
   border-right: 1px solid var(--surface-border);
   transition: width var(--transition-normal);
   z-index: 50;
-  box-shadow: 1px 0 24px rgba(2, 18, 38, 0.5);
+  box-shadow: var(--shadow-xl);
 }
 
 .sidebarCollapsed {
@@ -93,14 +93,14 @@
   justify-content: center;
   transition: all var(--transition-spring);
   z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow-sm);
 }
 
 .toggleBtn:hover {
   background: var(--bg-raised);
-  border-color: var(--celeste-400);
-  color: var(--celeste-300);
-  box-shadow: 0 0 16px rgba(0, 192, 243, 0.35);
+  border-color: var(--celeste-700);
+  color: var(--celeste-700);
+  box-shadow: var(--shadow-md);
   transform: scale(1.15);
 }
 
@@ -147,8 +147,7 @@
 }
 
 .sidebarCollapsed .sectionTitle {
-  text-align: center;
-  font-size: 0.65rem;
+  display: none;
 }
 
 .navItem {
@@ -170,13 +169,14 @@
 .navItem:hover {
   background: var(--surface-hover);
   color: var(--text-primary);
+  border-radius: var(--radius-md);
 }
 
 .navItemActive {
-  background: rgba(0, 93, 164, 0.12);
-  color: var(--celeste-400);
+  background: var(--surface-hover);
+  color: var(--text-primary);
   font-weight: 600;
-  border-left-color: var(--celeste-400);
+  border-left-color: var(--celeste-500);
 }
 
 .navItemActive::before {
@@ -186,7 +186,11 @@
   width: 3px;
   background: var(--gradient-primary);
   border-radius: 0 4px 4px 0;
-  box-shadow: 2px 0 8px rgba(0, 192, 243, 0.35);
+  box-shadow: 2px 0 8px rgba(0, 93, 164, 0.15);
+}
+
+.sidebarCollapsed .navItemActive::before {
+  display: none;
 }
 
 .navIcon {
@@ -204,9 +208,18 @@
 }
 
 .sidebarCollapsed .navItem {
-  padding: 12px;
+  padding: 10px;
   justify-content: center;
+  width: 44px;
+  height: 44px;
+  margin: 0 auto;
+  border-left: none;
 }
+
+.sidebarCollapsed .navItemActive {
+  background: var(--surface-hover);
+}
+
 
 .sidebarCollapsed .navLabel {
   opacity: 0;
@@ -215,11 +228,11 @@
 
 .userInfo {
   padding: 20px 24px;
-  border-top: 1px solid var(--surface-border);
+  border-bottom: 1px solid var(--surface-border);
   display: flex;
   align-items: center;
   gap: 12px;
-  background: var(--bg-deepest);
+  background: transparent;
 }
 
 .sidebarCollapsed .userInfo {
@@ -232,14 +245,14 @@
   height: 36px;
   border-radius: var(--radius-full);
   background: var(--gradient-accent);
-  color: #021226;
+  color: var(--text-inverse);
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(255, 224, 106, 0.3);
+  box-shadow: var(--shadow-sm);
 }
 
 .userDetails {
@@ -259,7 +272,7 @@
 
 .userRole {
   font-size: 0.75rem;
-  color: var(--celeste-400);
+  color: var(--text-muted);
   text-transform: capitalize;
   font-weight: 500;
   letter-spacing: 0.02em;

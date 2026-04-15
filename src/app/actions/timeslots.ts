@@ -15,6 +15,7 @@ import { requirePermission, ACTIONS } from '@/lib/permissions';
 import { timeslotSchema, timeslotImportRowSchema } from '@/lib/validations';
 import { logAuditEvent } from '@/lib/audit';
 import type { Role } from '@/lib/validations';
+import { sendCancellationConfirmation } from '@/lib/email';
 
 // ============================================================
 // Tipos
@@ -347,6 +348,17 @@ export async function cancelTimeslot(timeslotId: string): Promise<ActionResult> 
     return { success: false, error: 'El timeslot ya está cancelado' };
   }
 
+  // Obtener participaciones activas para notificar
+  const activeParticipations = await prisma.participation.findMany({
+    where: {
+      timeslotId,
+      status: { in: ['SIGNED_UP', 'REMINDED'] },
+    },
+    include: {
+      student: { select: { name: true, email: true } },
+    },
+  });
+
   // Cancelar participaciones activas
   await prisma.participation.updateMany({
     where: {
@@ -358,6 +370,18 @@ export async function cancelTimeslot(timeslotId: string): Promise<ActionResult> 
       cancellationReason: 'Timeslot cancelado por el investigador',
     },
   });
+
+  // Notificar a los estudiantes de la cancelación sin penalización
+  for (const part of activeParticipations) {
+    if (part.student.email) {
+      await sendCancellationConfirmation(
+        part.student.email,
+        part.student.name || 'Estudiante',
+        timeslot.study.title,
+        false // No penalty
+      );
+    }
+  }
 
   // Cancelar waitlist
   await prisma.waitlistEntry.updateMany({

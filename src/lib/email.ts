@@ -358,3 +358,61 @@ export async function sendStudyRejected(
   });
 }
 
+/**
+ * Envía notificación a los administradores cuando un IP envía un estudio para aprobación.
+ *
+ * @param to - Email del administrador
+ * @param adminName - Nombre del administrador
+ * @param studyTitle - Título del estudio
+ * @param researcherName - Nombre del investigador o ejecutor principal
+ */
+export async function sendStudyPendingApproval(
+  to: string,
+  adminName: string,
+  studyTitle: string,
+  researcherName: string
+): Promise<EmailResult> {
+  return sendEmail({
+    to,
+    subject: `SIROPE: Acción Requerida — Estudio "${studyTitle}" pendiente de aprobación`,
+    text: [
+      `Hola ${adminName},`,
+      '',
+      `El investigador ${researcherName} acaba de enviar el estudio "${studyTitle}" para su revisión y aprobación final por parte de la administración.`,
+      '',
+      'Puedes revisarlo ingresando a tu módulo de Aprobaciones en SIROPE.',
+      '',
+      '— SIROPE Notificaciones de Sistema',
+    ].join('\n'),
+  });
+}
+
+/**
+ * Notifica al Investigador Principal que un estudiante desea apelar un NO-SHOW.
+ *
+ * @param to - Email del IP
+ * @param studentName - Nombre del estudiante
+ * @param studentEmail - Correo del estudiante
+ * @param studyTitle - Título del estudio
+ */
+export async function sendNoShowAppealNotification(
+  to: string,
+  studentName: string,
+  studentEmail: string,
+  studyTitle: string
+): Promise<EmailResult> {
+  return sendEmail({
+    to,
+    subject: `SIROPE: Apelación de Ausencia — ${studentName}`,
+    text: [
+      `Hola,`,
+      '',
+      `El estudiante ${studentName} (${studentEmail}) ha solicitado apelar la calificación de ausencia (No-Show) asignada en el estudio "${studyTitle}".`,
+      '',
+      'Por favor, ponte en contacto con el estudiante para resolver esta situación. Si fue un error, puedes corregir su estado desde el panel de control de SIROPE.',
+      '',
+      '— SIROPE Notificaciones Automáticas',
+    ].join('\n'),
+  });
+}
+

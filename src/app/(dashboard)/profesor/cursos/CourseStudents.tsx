@@ -6,6 +6,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
+import { removeStudentFromCourse } from '@/app/actions/courses';
 
 interface CourseStudentsProps {
   courseId: string;
@@ -40,6 +41,19 @@ export default function CourseStudents({ courseId }: CourseStudentsProps) {
     setExpanded(!expanded);
   }
 
+  function handleRemoveStudent(studentId: string, studentName: string) {
+    if (!confirm(`¿Estás seguro de que deseas expulsar a ${studentName} de tu curso? Si le habías aprobado créditos para este curso, le serán devueltos a su saldo general y podrá usarlos en otra materia.`)) return;
+    
+    startTransition(async () => {
+      const res = await removeStudentFromCourse(courseId, studentId);
+      if (res.success) {
+        setStudents(students.filter(s => s.id !== studentId));
+      } else {
+        alert(res.error || 'Error al remover al estudiante');
+      }
+    });
+  }
+
   return (
     <div style={{ marginTop: 12 }}>
       <button
@@ -66,6 +80,7 @@ export default function CourseStudents({ courseId }: CourseStudentsProps) {
                     <th>Carné</th>
                     <th>Participaciones</th>
                     <th>Créditos</th>
+                    <th></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -79,6 +94,16 @@ export default function CourseStudents({ courseId }: CourseStudentsProps) {
                         <span className={`badge ${s.credits > 0 ? 'badge-success' : 'badge-neutral'}`}>
                           {s.credits}
                         </span>
+                      </td>
+                      <td style={{ textAlign: 'right' }}>
+                        <button 
+                          className="btn btn-ghost btn-sm" 
+                          onClick={() => handleRemoveStudent(s.id, s.name)}
+                          disabled={isPending}
+                          title="Remover estudiante y desasignar créditos"
+                        >
+                          🗑️
+                        </button>
                       </td>
                     </tr>
                   ))}

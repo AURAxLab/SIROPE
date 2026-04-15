@@ -21,6 +21,7 @@ interface SidebarProps {
   userRole: string;
   userName: string;
   userEmail: string;
+  logoUrl?: string;
 }
 
 // Menú dinámico basado en rol
@@ -32,6 +33,7 @@ const getNavItems = (role: string) => {
         { href: '/admin/usuarios', label: 'Usuarios', icon: Users, section: 'Gestión' },
         { href: '/admin/semestres', label: 'Semestres', icon: Calendar, section: 'Gestión' },
         { href: '/admin/aprobaciones', label: 'Aprobaciones', icon: CheckSquare, section: 'Operaciones' },
+        { href: '/admin/estudios', label: 'Todos los Estudios', icon: BookOpen, section: 'Investigación' },
         { href: '/admin/auditoria', label: 'Auditoría', icon: FileText, section: 'Operaciones' },
         { href: '/admin/analytics', label: 'Analytics', icon: BarChart2, section: 'Sistema' },
         { href: '/admin/configuracion', label: 'Configuración', icon: Settings, section: 'Sistema' },
@@ -59,7 +61,7 @@ const getNavItems = (role: string) => {
   }
 };
 
-export default function Sidebar({ userRole, userName, userEmail }: SidebarProps) {
+export default function Sidebar({ userRole, userName, userEmail, logoUrl = '/logo-institucion.svg' }: SidebarProps) {
   const pathname = usePathname();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -103,7 +105,7 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
           </button>
           <div className={styles.brand}>
             <div className={styles.logo}>
-              <img src="/logo-institucion.svg" alt="Logo institucional" width={22} height={22} style={{ objectFit: 'contain' }} />
+              <img src={logoUrl} alt="Logo institucional" width={22} height={22} style={{ objectFit: 'contain' }} />
             </div>
             <span style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)', fontSize: '1.25rem' }}>SIROPE</span>
           </div>
@@ -124,7 +126,7 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
         <div className={styles.header}>
           <Link href="/" className={styles.brand}>
             <div className={styles.logo}>
-              <img src="/logo-institucion.svg" alt="Logo institucional" width={22} height={22} style={{ objectFit: 'contain' }} />
+              <img src={logoUrl} alt="Logo institucional" width={22} height={22} style={{ objectFit: 'contain' }} />
             </div>
             <span className={styles.brandName}>SIROPE</span>
           </Link>
@@ -135,6 +137,20 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
           >
             {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
           </button>
+        </div>
+
+        <div className={styles.userInfo}>
+          <div className={styles.avatar}>
+            {userName.charAt(0).toUpperCase()}
+          </div>
+          <div className={styles.userDetails}>
+            <span className={styles.userName} title={userName}>{userName}</span>
+            <span className={styles.userRole}>
+              {userRole === 'ADMIN' ? 'Administrador' : 
+               userRole === 'RESEARCHER' ? 'Investigador' : 
+               userRole === 'PROFESSOR' ? 'Profesor' : 'Estudiante'}
+            </span>
+          </div>
         </div>
 
         <nav className={styles.nav}>
@@ -163,20 +179,6 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
             </div>
           ))}
         </nav>
-
-        <div className={styles.userInfo}>
-          <div className={styles.avatar}>
-            {userName.charAt(0).toUpperCase()}
-          </div>
-          <div className={styles.userDetails}>
-            <span className={styles.userName} title={userName}>{userName}</span>
-            <span className={styles.userRole}>
-              {userRole === 'ADMIN' ? 'Administrador' : 
-               userRole === 'RESEARCHER' ? 'Investigador' : 
-               userRole === 'PROFESSOR' ? 'Profesor' : 'Estudiante'}
-            </span>
-          </div>
-        </div>
       </aside>
     </>
   );

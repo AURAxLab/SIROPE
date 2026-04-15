@@ -6,7 +6,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { updateInstitutionConfig, updateSystemConfig, saveLdapConfig, testLdapConnection } from '@/app/actions/admin';
+import { updateInstitutionConfig, updateSystemConfig, saveLdapConfig, testLdapConnection, uploadInstitutionLogo } from '@/app/actions/admin';
 import { useToast } from '@/components/Toast';
 
 interface ConfigFormProps {
@@ -76,6 +76,32 @@ export default function ConfigForm({ institution, configs }: ConfigFormProps) {
     setLdapForm((prev: typeof DEFAULT_LDAP) => ({ ...prev, [e.target.name]: val }));
   }
 
+  function handleLogoUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    if (file.size > 2 * 1024 * 1024) {
+      toast('El archivo supera el límite de 2MB.', 'error');
+      e.target.value = ''; // Reset
+      return;
+    }
+
+    startTransition(() => {
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result as string;
+        const res = await uploadInstitutionLogo(base64);
+        if (res.success) {
+          toast('Logo actualizado exitosamente (recargue para ver cambios)', 'success');
+        } else {
+          toast(res.error || 'Error al subir el logo', 'error');
+        }
+      };
+      reader.onerror = () => toast('Error al procesar el archivo local', 'error');
+      reader.readAsDataURL(file);
+    });
+  }
+
   function handleSaveInstitution() {
     startTransition(async () => {
       await updateInstitutionConfig(instForm);
@@ -117,17 +143,24 @@ export default function ConfigForm({ institution, configs }: ConfigFormProps) {
       <div className="card">
         <h2 style={{ marginBottom: 16 }}>🏛️ Datos Institucionales</h2>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+          <div className="form-group" style={{ gridColumn: '1 / -1' }}>
+            <label className="form-label">Logotipo Institucional (Opcional)</label>
+            <input className="form-input" style={{ padding: '8px' }} type="file" accept="image/png, image/jpeg, image/svg+xml, image/webp" onChange={handleLogoUpload} disabled={isPending} />
+            <p style={{ fontSize: '0.8125rem', color: 'var(--text-muted)', marginTop: 4 }}>
+              Debe ser un archivo PNG, JPG, WEBP o SVG menor a 2MB. Si se omite, se usará el logotipo por defecto.
+            </p>
+          </div>
           <div className="form-group">
-            <label className="form-label">Nombre de la institución</label>
+            <label className="form-label">Universidad Matriz u Organización</label>
+            <input className="form-input" name="universityName" value={instForm.universityName} onChange={handleInstChange} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Unidad Gestora del Sistema</label>
             <input className="form-input" name="name" value={instForm.name} onChange={handleInstChange} />
           </div>
           <div className="form-group">
-            <label className="form-label">Siglas</label>
+            <label className="form-label">Siglas de la Unidad</label>
             <input className="form-input" name="shortName" value={instForm.shortName} onChange={handleInstChange} />
-          </div>
-          <div className="form-group">
-            <label className="form-label">Universidad</label>
-            <input className="form-input" name="universityName" value={instForm.universityName} onChange={handleInstChange} />
           </div>
           <div className="form-group">
             <label className="form-label">Email de contacto</label>

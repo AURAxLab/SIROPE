@@ -170,7 +170,7 @@ export default function UserTable({ currentUserId, initialUsers, initialTotal }:
                       {new Date(u.createdAt).toLocaleDateString('es-CR', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </td>
                     <td>
-                      <UserActions userId={u.id} active={u.active} currentUserId={currentUserId} currentRole={u.role} currentName={u.name} currentEmail={u.email} />
+                      <UserActions userId={u.id} active={u.active} currentUserId={currentUserId} currentRole={u.role} currentName={u.name} currentEmail={u.email} currentStudentId={u.studentId || ''} />
                     </td>
                   </tr>
                 ))

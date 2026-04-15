@@ -7,7 +7,7 @@ export default function AdminLoading() {
   return (
     <div className="animate-fade-in">
       <div className="page-header">
-        <h1 className="page-title">Panel de Administración ⚙️</h1>
+        <div style={{ height: '40px', width: '250px', background: 'var(--surface-border)', borderRadius: 'var(--radius-md)' }} className="animate-pulse" />
       </div>
       <SkeletonStatGrid count={4} />
       <div style={{ marginTop: 24 }}>

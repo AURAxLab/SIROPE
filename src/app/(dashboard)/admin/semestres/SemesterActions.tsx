@@ -5,8 +5,8 @@
 
 'use client';
 
-import { useTransition } from 'react';
-import { activateSemester } from '@/app/actions/admin';
+import { useTransition, useState } from 'react';
+import { activateSemester, deactivateSemester } from '@/app/actions/admin';
 
 interface SemesterActionsProps {
   semesterId: string;
@@ -15,22 +15,41 @@ interface SemesterActionsProps {
 
 export default function SemesterActions({ semesterId, active }: SemesterActionsProps) {
   const [isPending, startTransition] = useTransition();
+  const [confirming, setConfirming] = useState(false);
 
-  function handleActivate() {
-    if (!confirm(active ? '¿Desactivar este semestre?' : '¿Activar este semestre? Se desactivará cualquier otro.')) return;
+  function handleAction() {
+    if (!confirming) {
+      setConfirming(true);
+      // Automatically close confirmation state after 4 seconds
+      setTimeout(() => setConfirming(false), 4000);
+      return;
+    }
+
     startTransition(async () => {
-      await activateSemester(semesterId);
+      if (active) {
+        await deactivateSemester(semesterId);
+      } else {
+        await activateSemester(semesterId);
+      }
+      setConfirming(false);
       window.location.reload();
     });
   }
 
+  function getButtonLabel() {
+    if (isPending) return '...';
+    if (confirming) return active ? '⚠️ ¿Desactivar?' : '⚠️ ¿Activar?';
+    return active ? '⏸ Desactivar' : '🟢 Activar';
+  }
+
   return (
     <button
-      className={`btn ${active ? 'btn-secondary' : 'btn-primary'} btn-sm`}
-      onClick={handleActivate}
+      className={`btn ${confirming ? 'btn-danger' : active ? 'btn-secondary' : 'btn-primary'} btn-sm`}
+      onClick={handleAction}
       disabled={isPending}
+      title={active ? 'Haga clic para desactivar' : 'Al activar, otros se desactivarán'}
     >
-      {isPending ? '...' : active ? '⏸ Desactivar' : '🟢 Activar'}
+      {getButtonLabel()}
     </button>
   );
 }

@@ -7,6 +7,7 @@
 
 import { useState, useTransition } from 'react';
 import { signUpForTimeslot } from '@/app/actions/participation';
+import JoinWaitlistButton from './JoinWaitlistButton';
 
 interface TimeslotData {
   id: string;
@@ -157,19 +158,22 @@ export default function TimeslotSignUp({ timeslots, studyId, ethicsApproved, eth
                   {isFull ? 'Lleno' : `${spotsLeft} espacio${spotsLeft !== 1 ? 's' : ''}`}
                 </span>
 
-                <button
-                  className={`btn ${isFull || !accepted ? 'btn-ghost' : 'btn-primary'} btn-sm`}
-                  disabled={isFull || !accepted || (isPending && signingUpId === t.id)}
-                  onClick={() => handleSignUp(t.id)}
-                  title={!accepted ? 'Debe confirmar participación voluntaria' : ''}
-                >
-                  {isPending && signingUpId === t.id
-                    ? 'Inscribiendo...'
-                    : isFull
-                    ? 'Sin espacio'
-                    : 'Inscribirse'}
-                </button>
-              </div>
+                  <button
+                    className={`btn ${isFull || !accepted ? 'btn-ghost' : 'btn-primary'} btn-sm`}
+                    style={{ display: isFull ? 'none' : 'block' }}
+                    disabled={isFull || !accepted || (isPending && signingUpId === t.id)}
+                    onClick={() => handleSignUp(t.id)}
+                    title={!accepted ? 'Debe confirmar participación voluntaria' : ''}
+                  >
+                    {isPending && signingUpId === t.id
+                      ? 'Inscribiendo...'
+                      : 'Inscribirse'}
+                  </button>
+
+                  {isFull && (
+                    <JoinWaitlistButton timeslotId={t.id} />
+                  )}
+                </div>
             </div>
           );
         })}

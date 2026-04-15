@@ -13,6 +13,7 @@ import { auth } from '@/lib/auth';
 import prisma from '@/lib/prisma';
 import { requirePermission, ACTIONS } from '@/lib/permissions';
 import { notifyWaitlistPromotion } from './notifications';
+import { sendNoShowAppealNotification } from '@/lib/email';
 import { markCompletionSchema, bulkCompletionSchema } from '@/lib/validations';
 import { logAuditEvent } from '@/lib/audit';
 import type { Role } from '@/lib/validations';
@@ -267,6 +268,58 @@ export async function cancelSignUp(
   });
 
   return { success: true, data: { penalized } };
+}
+
+/**
+ * Envía un correo de apelación sobre un estado de NO_SHOW al Investigador.
+ * 
+ * @param participationId - ID de la participación a apelar
+ */
+export async function appealNoShow(participationId: string): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user) return { success: false, error: 'No autenticado' };
+
+  if (session.user.role !== 'ESTUDIANTE') return { success: false, error: 'Solo estudiantes pueden apelar' };
+
+  const participation = await prisma.participation.findUnique({
+    where: { id: participationId },
+    include: {
+      study: {
+        include: {
+          principalInvestigator: { select: { email: true } }
+        }
+      },
+      timeslot: true
+    }
+  });
+
+  if (!participation || participation.studentId !== session.user.id) {
+    return { success: false, error: 'Participación no encontrada o denegada' };
+  }
+
+  if (participation.status !== 'NO_SHOW') {
+    return { success: false, error: 'Solo se puede apelar una ausencia (No-Show)' };
+  }
+
+  // Notificar al IP
+  if (participation.study.principalInvestigator.email) {
+    await sendNoShowAppealNotification(
+       participation.study.principalInvestigator.email,
+       session.user.name || 'Estudiante',
+       session.user.email || 'correo@no.disponible',
+       participation.study.title
+    );
+  }
+
+  await logAuditEvent({
+    userId: session.user.id,
+    action: 'APPEAL_NO_SHOW',
+    entityType: 'Participation',
+    entityId: participationId,
+    newState: { message: 'Appeal email sent to PI' }
+  });
+
+  return { success: true };
 }
 
 /**

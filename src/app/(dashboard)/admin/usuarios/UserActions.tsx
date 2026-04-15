@@ -15,6 +15,7 @@ interface UserActionsProps {
   currentRole: string;
   currentName: string;
   currentEmail: string;
+  currentStudentId?: string;
 }
 
 const ROLES = [
@@ -25,19 +26,33 @@ const ROLES = [
   { value: 'ADMIN', label: '🛡️ Admin' },
 ];
 
-export default function UserActions({ userId, active, currentUserId, currentRole, currentName, currentEmail }: UserActionsProps) {
+export default function UserActions({ userId, active, currentUserId, currentRole, currentName, currentEmail, currentStudentId = '' }: UserActionsProps) {
   const [isPending, startTransition] = useTransition();
   const [mode, setMode] = useState<'idle' | 'role' | 'edit'>('idle');
+  
   const [selectedRole, setSelectedRole] = useState(currentRole);
+  
   const [editName, setEditName] = useState(currentName);
-  const [editEmail] = useState(currentEmail);
+  const [editEmail, setEditEmail] = useState(currentEmail);
+  const [editStudentId, setEditStudentId] = useState(currentStudentId);
+  const [confirmDisable, setConfirmDisable] = useState(false);
+
   const [tempPassword, setTempPassword] = useState('');
   const isSelf = userId === currentUserId;
 
   function handleToggle() {
     if (isSelf) return;
+    
+    // Si queremos desactivar, pedir confirmacion interactiva
+    if (active && !confirmDisable) {
+      setConfirmDisable(true);
+      setTimeout(() => setConfirmDisable(false), 3000); // Reset confirm state after 3 sec
+      return;
+    }
+
     startTransition(async () => {
       await updateUser(userId, { active: !active });
+      setConfirmDisable(false);
       window.location.reload();
     });
   }
@@ -51,9 +66,17 @@ export default function UserActions({ userId, active, currentUserId, currentRole
   }
 
   function handleEditSave() {
-    if (editName === currentName) { setMode('idle'); return; }
+    if (editName === currentName && editEmail === currentEmail && editStudentId === currentStudentId) { 
+      setMode('idle'); 
+      return; 
+    }
+    
     startTransition(async () => {
-      await updateUser(userId, { name: editName });
+      await updateUser(userId, { 
+        name: editName, 
+        email: editEmail, 
+        studentId: editStudentId || undefined 
+      });
       window.location.reload();
     });
   }
@@ -74,6 +97,8 @@ export default function UserActions({ userId, active, currentUserId, currentRole
     setMode('idle');
     setSelectedRole(currentRole);
     setEditName(currentName);
+    setEditEmail(currentEmail);
+    setEditStudentId(currentStudentId);
   }
 
   return (
@@ -98,29 +123,34 @@ export default function UserActions({ userId, active, currentUserId, currentRole
       )}
 
       {mode === 'edit' && (
-        <>
-          <input className="form-input" style={{ width: 180, fontSize: '0.8125rem', padding: '4px 8px', margin: 0 }}
+        <div style={{ display: 'flex', gap: 6, alignItems: 'center', padding: '4px', background: 'var(--surface-bg)', borderRadius: 'var(--radius-sm)', border: '1px solid var(--surface-border)' }}>
+          <input className="form-input" style={{ width: 140, fontSize: '0.8125rem', padding: '4px 8px', margin: 0 }}
             value={editName} onChange={(e) => setEditName(e.target.value)} placeholder="Nombre" />
-          <span style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>{editEmail}</span>
-          <button className="btn btn-primary btn-sm" onClick={handleEditSave} disabled={isPending}>{isPending ? '...' : '✓'}</button>
-          <button className="btn btn-ghost btn-sm" onClick={cancel}>✕</button>
-        </>
+          <input className="form-input" style={{ width: 160, fontSize: '0.8125rem', padding: '4px 8px', margin: 0 }}
+            value={editEmail} onChange={(e) => setEditEmail(e.target.value)} placeholder="Correo" type="email" />
+          <input className="form-input" style={{ width: 100, fontSize: '0.8125rem', padding: '4px 8px', margin: 0 }}
+            value={editStudentId} onChange={(e) => setEditStudentId(e.target.value)} placeholder="Ej: B90000" />
+            
+          <button className="btn btn-primary btn-sm" onClick={handleEditSave} disabled={isPending}>{isPending ? '...' : 'Guardar'}</button>
+          <button className="btn btn-ghost btn-sm" onClick={cancel}>Cancelar</button>
+        </div>
       )}
 
       {mode === 'idle' && (
         <>
           <button className="btn btn-ghost btn-sm" onClick={() => setMode('edit')} disabled={isSelf}
-            title="Editar nombre">✏️</button>
+            title="Editar datos">✏️</button>
           <button className="btn btn-ghost btn-sm" onClick={() => setMode('role')} disabled={isSelf}
             title="Cambiar rol">👤 Rol</button>
           {!isSelf && (
             <button className="btn btn-ghost btn-sm" onClick={handleResetPassword} disabled={isPending}
               title="Resetear contraseña">🔑</button>
           )}
-          <button className={`btn ${active ? 'btn-secondary' : 'btn-primary'} btn-sm`}
+          <button className={`btn ${active ? (confirmDisable ? 'btn-danger' : 'btn-ghost') : 'btn-primary'} btn-sm`}
             onClick={handleToggle} disabled={isPending || isSelf}
-            title={isSelf ? 'No puedes desactivarte' : undefined}>
-            {isPending ? '...' : active ? '🚫' : '✅'}
+            style={confirmDisable ? { background: 'var(--color-error)', color: 'white' } : {}}
+            title={isSelf ? 'No puedes suspenderte' : 'Suspender/Activar usuario'}>
+            {isPending ? '...' : active ? (confirmDisable ? '⚠️ Confirmar' : '🗑️ Suspender') : '✅ Restablecer'}
           </button>
         </>
       )}

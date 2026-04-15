@@ -10,6 +10,8 @@ import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import type { Role } from '@/lib/validations';
 import Link from 'next/link';
+import AppealNoShowButton from './AppealNoShowButton';
+import AlternativeAssignmentModal from './AlternativeAssignmentModal';
 
 const STATUS_LABELS: Record<string, { label: string; badge: string }> = {
   SIGNED_UP: { label: 'Inscrito', badge: 'badge-info' },
@@ -43,10 +45,27 @@ export default async function Historial() {
   const completed = participations.filter((p) => p.status === 'COMPLETED').length;
   const noShows = participations.filter((p) => p.status === 'NO_SHOW').length;
 
+  const enrollments = await prisma.enrollment.findMany({
+    where: {
+      studentId: session.user.id,
+      course: { optedIn: true, semester: { active: true } },
+    },
+    include: { course: true },
+  });
+
+  const altAssignments = await prisma.alternativeAssignment.findMany({
+    where: { studentId: session.user.id },
+    include: { course: { select: { code: true } } },
+    orderBy: { createdAt: 'desc' },
+  });
+
   return (
     <div className="animate-fade-in">
       <div className="page-header">
         <h1 className="page-title">Historial 📜</h1>
+        <div style={{ display: 'flex', gap: 12 }}>
+          <AlternativeAssignmentModal courses={enrollments.map(e => e.course)} />
+        </div>
       </div>
 
       {/* Resumen */}
@@ -105,6 +124,9 @@ export default async function Historial() {
                         <span className={`badge ${statusInfo.badge}`}>
                           {statusInfo.label}
                         </span>
+                        {p.status === 'NO_SHOW' && (
+                          <AppealNoShowButton participationId={p.id} />
+                        )}
                       </td>
                       <td>{p.creditsEarned || '—'}</td>
                       <td>
@@ -116,6 +138,50 @@ export default async function Historial() {
                       </td>
                     </tr>
                   );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
+
+      {/* Tareas alternativas enviadas */}
+      {altAssignments.length > 0 && (
+        <div className="card" style={{ marginTop: 32 }}>
+          <h2 style={{ marginBottom: 16, fontSize: '1.25rem' }}>📝 Asignaciones Alternativas</h2>
+          <div className="table-wrapper">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Fecha</th>
+                  <th>Curso</th>
+                  <th>Créditos Solicitados</th>
+                  <th>Estado</th>
+                  <th>Feedback del Profesor</th>
+                </tr>
+              </thead>
+              <tbody>
+                {altAssignments.map((alt) => {
+                  let badge = 'badge-neutral';
+                  if (alt.status === 'APPROVED') badge = 'badge-success';
+                  if (alt.status === 'REJECTED') badge = 'badge-error';
+                  if (alt.status === 'PENDING') badge = 'badge-warning';
+
+                  return (
+                    <tr key={alt.id}>
+                      <td style={{ whiteSpace: 'nowrap' }}>
+                        {alt.createdAt.toLocaleDateString('es-CR', {
+                          day: 'numeric', month: 'short', year: 'numeric',
+                        })}
+                      </td>
+                      <td><span className="badge badge-primary">{alt.course.code}</span></td>
+                      <td>{alt.creditsRequested}</td>
+                      <td>
+                        <span className={`badge ${badge}`}>{alt.status}</span>
+                      </td>
+                      <td>{alt.feedback || '—'}</td>
+                    </tr>
+                  )
                 })}
               </tbody>
             </table>

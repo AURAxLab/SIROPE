@@ -168,7 +168,7 @@ export async function createUser(formData: {
  */
 export async function updateUser(
   userId: string,
-  updates: { role?: string; active?: boolean; name?: string }
+  updates: { role?: string; active?: boolean; name?: string; email?: string; studentId?: string; }
 ): Promise<ActionResult> {
   const session = await auth();
   if (!session?.user) return { success: false, error: 'No autenticado' };
@@ -187,6 +187,8 @@ export async function updateUser(
   if (updates.role) updateData.role = updates.role;
   if (updates.active !== undefined) updateData.active = updates.active;
   if (updates.name) updateData.name = updates.name;
+  if (updates.email) updateData.email = updates.email;
+  if (updates.studentId !== undefined) updateData.studentId = updates.studentId;
 
   await prisma.user.update({ where: { id: userId }, data: updateData });
 
@@ -354,6 +356,34 @@ export async function activateSemester(semesterId: string): Promise<ActionResult
   return { success: true };
 }
 
+/**
+ * Desactiva un semestre específico.
+ *
+ * @param semesterId - ID del semestre a desactivar
+ */
+export async function deactivateSemester(semesterId: string): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user) return { success: false, error: 'No autenticado' };
+
+  const role = session.user.role as Role;
+  requirePermission(role, ACTIONS.MANAGE_SEMESTERS);
+
+  await prisma.semester.update({
+    where: { id: semesterId },
+    data: { active: false },
+  });
+
+  await logAuditEvent({
+    userId: session.user.id,
+    action: 'DEACTIVATE_SEMESTER',
+    entityType: 'Semester',
+    entityId: semesterId,
+    newState: { active: false },
+  });
+
+  return { success: true };
+}
+
 // ============================================================
 // Configuración del Sistema
 // ============================================================
@@ -474,6 +504,38 @@ export async function updateInstitutionConfig(formData: {
       authMode: parsed.data.authMode || 'CREDENTIALS',
     },
     create: { id: 'singleton' },
+  });
+
+  return { success: true };
+}
+
+/**
+ * Guarda el logo de la institución como Data URL (Base64)
+ *
+ * @param base64Image - Imagen en formato Data URI
+ */
+export async function uploadInstitutionLogo(base64Image: string): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user) return { success: false, error: 'No autenticado' };
+
+  const role = session.user.role as Role;
+  requirePermission(role, ACTIONS.MANAGE_SYSTEM_CONFIG);
+
+  if (base64Image.length > 3 * 1024 * 1024) {
+    return { success: false, error: 'La imagen excede el límite de 2 MB.' };
+  }
+
+  await prisma.systemConfig.upsert({
+    where: { key: 'INSTITUTION_LOGOURL' },
+    update: { value: base64Image },
+    create: { key: 'INSTITUTION_LOGOURL', value: base64Image },
+  });
+
+  await logAuditEvent({
+    userId: session.user.id,
+    action: 'UPDATE_INSTITUTION_LOGO',
+    entityType: 'SystemConfig',
+    entityId: 'INSTITUTION_LOGOURL',
   });
 
   return { success: true };
@@ -717,4 +779,51 @@ function escapeCsvField(value: string): string {
     return `"${escaped.replace(/"/g, '""')}"`;
   }
   return escaped;
+}
+
+export async function getAdminStudies({
+  search,
+  status,
+  page = 1,
+  pageSize = 25,
+}: {
+  search?: string;
+  status?: string;
+  page?: number;
+  pageSize?: number;
+}): Promise<ActionResult> {
+  const session = await auth();
+  if (!session?.user) return { success: false, error: 'No autenticado' };
+
+  const role = session.user.role as Role;
+  requirePermission(role, ACTIONS.APPROVE_STUDIES);
+
+  const skip = (page - 1) * pageSize;
+
+  const where: any = {};
+  if (status) {
+    where.status = status;
+  }
+  if (search) {
+    where.OR = [
+      { title: { contains: search } },
+      { principalInvestigator: { name: { contains: search } } },
+    ];
+  }
+
+  const [studies, total] = await Promise.all([
+    prisma.study.findMany({
+      where,
+      skip,
+      take: pageSize,
+      orderBy: { createdAt: 'desc' },
+      include: {
+        principalInvestigator: { select: { name: true } },
+        semester: { select: { name: true } },
+      },
+    }),
+    prisma.study.count({ where }),
+  ]);
+
+  return { success: true, data: { studies, total } };
 }

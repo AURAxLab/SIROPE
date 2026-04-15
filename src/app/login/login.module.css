@@ -19,8 +19,8 @@
   inset: 0;
   z-index: 1;
   background-image: 
-    linear-gradient(rgba(0, 93, 164, 0.08) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 93, 164, 0.08) 1px, transparent 1px);
+    linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
   background-size: 60px 60px;
   background-position: center;
   mask-image: radial-gradient(circle at center, black 20%, transparent 80%);
@@ -72,15 +72,10 @@
   width: 100%;
   max-width: 440px;
   padding: 48px;
-  background: rgba(4, 26, 52, 0.65);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(0, 154, 204, 0.18);
+  background: var(--surface-card);
+  border: 1px solid var(--surface-border);
   border-radius: var(--radius-xl);
-  box-shadow: 
-    0 24px 48px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 0 40px rgba(0, 93, 164, 0.15);
+  box-shadow: var(--shadow-xl);
   animation: formEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   transform-style: preserve-3d;
 }
@@ -99,16 +94,6 @@
   width: 96px;
   height: 96px;
   margin: 0 auto 20px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 12px;
-  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.05), 0 8px 16px rgba(0, 0, 0, 0.2);
-  position: relative;
-  overflow: hidden;
 }
 
 .logoIcon::after {
@@ -169,23 +154,22 @@
   font-family: var(--font-body);
   font-size: 0.9375rem;
   border-radius: var(--radius-md);
-  background: rgba(2, 18, 38, 0.5);
-  border: 1px solid rgba(0, 93, 164, 0.2);
+  background: var(--surface-bg);
+  border: 1px solid var(--surface-border-strong);
   color: var(--text-primary);
   transition: all var(--transition-normal);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+  box-shadow: inset 0 2px 4px rgba(15,23,42,0.02);
 }
 
 .inputField::placeholder {
   color: var(--text-muted);
-  opacity: 0.7;
 }
 
 .inputField:focus {
   outline: none;
-  background: rgba(4, 26, 52, 0.8);
-  border-color: var(--celeste-400);
-  box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 0 0 3px rgba(0, 192, 243, 0.15);
+  background: var(--surface-card);
+  border-color: var(--celeste-500);
+  box-shadow: inset 0 2px 4px rgba(15,23,42,0.02), 0 0 0 3px rgba(0, 192, 243, 0.1);
 }
 
 .inputGroup:focus-within .inputIcon {
