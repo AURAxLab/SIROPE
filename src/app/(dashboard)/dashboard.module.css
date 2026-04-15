@@ -1,13 +1,13 @@
 /**
  * SIROPE Dashboard Module
- * "UCR Celeste" — clean dark slate background, centered scrollable surface
+ * Paleta oficial UCR — Azul UCR background, centered scrollable surface
  */
 
 .layout {
   display: flex;
   height: 100vh;
   overflow: hidden;
-  background: var(--bg-deepest);
+  background: var(--bg-deepest);  /* #021226 — Azul UCR deepest */
 }
 
 .content {
@@ -19,8 +19,8 @@
   background: var(--bg-base);
   /* Topographic map pattern for subtle texture */
   background-image: 
-    linear-gradient(rgba(51, 221, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(51, 221, 255, 0.02) 1px, transparent 1px);
+    linear-gradient(rgba(0, 93, 164, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 93, 164, 0.06) 1px, transparent 1px);
   background-size: 80px 80px;
   background-position: center top;
 }
@@ -29,7 +29,7 @@
   content: '';
   position: fixed;
   inset: 0;
-  background: radial-gradient(circle at top right, rgba(0, 192, 243, 0.05), transparent 40%);
+  background: radial-gradient(circle at top right, rgba(0, 93, 164, 0.12), transparent 40%);
   pointer-events: none;
   z-index: 1;
 }

@@ -1,6 +1,6 @@
 /**
  * SIROPE Sidebar Module
- * "UCR Celeste" — clean dark slate surface, celeste active indicator
+ * Paleta oficial UCR — Azul UCR surface, celeste active indicator
  */
 
 .sidebar {
@@ -14,7 +14,7 @@
   border-right: 1px solid var(--surface-border);
   transition: width var(--transition-normal);
   z-index: 50;
-  box-shadow: 1px 0 24px rgba(4, 11, 20, 0.4);
+  box-shadow: 1px 0 24px rgba(2, 18, 38, 0.5);
 }
 
 .sidebarCollapsed {
@@ -47,16 +47,17 @@
 
 .logo {
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  width: 34px;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, rgba(0, 192, 243, 0.1), transparent);
-  border: 1px solid rgba(0, 192, 243, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 8px;
-  color: var(--celeste-400);
+  padding: 4px;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+  overflow: hidden;
 }
 
 .brandName {
@@ -99,7 +100,7 @@
   background: var(--bg-raised);
   border-color: var(--celeste-400);
   color: var(--celeste-300);
-  box-shadow: 0 0 16px rgba(0, 192, 243, 0.4);
+  box-shadow: 0 0 16px rgba(0, 192, 243, 0.35);
   transform: scale(1.15);
 }
 
@@ -172,7 +173,7 @@
 }
 
 .navItemActive {
-  background: rgba(51, 221, 255, 0.06);
+  background: rgba(0, 93, 164, 0.12);
   color: var(--celeste-400);
   font-weight: 600;
   border-left-color: var(--celeste-400);
@@ -185,7 +186,7 @@
   width: 3px;
   background: var(--gradient-primary);
   border-radius: 0 4px 4px 0;
-  box-shadow: 2px 0 8px rgba(0, 192, 243, 0.4);
+  box-shadow: 2px 0 8px rgba(0, 192, 243, 0.35);
 }
 
 .navIcon {
@@ -231,14 +232,14 @@
   height: 36px;
   border-radius: var(--radius-full);
   background: var(--gradient-accent);
-  color: #040b14;
+  color: #021226;
   font-weight: 700;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 0.9rem;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(255, 204, 77, 0.3);
+  box-shadow: 0 2px 8px rgba(255, 224, 106, 0.3);
 }
 
 .userDetails {

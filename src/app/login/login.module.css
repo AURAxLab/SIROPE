@@ -1,6 +1,6 @@
 /**
  * SIROPE Login Module
- * "UCR Celeste" — clean dark slate aesthetic with celestial glow
+ * Paleta oficial UCR — Azul UCR deep background with celeste glow
  */
 
 .loginWrapper {
@@ -19,8 +19,8 @@
   inset: 0;
   z-index: 1;
   background-image: 
-    linear-gradient(rgba(51, 221, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(51, 221, 255, 0.03) 1px, transparent 1px);
+    linear-gradient(rgba(0, 93, 164, 0.08) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 93, 164, 0.08) 1px, transparent 1px);
   background-size: 60px 60px;
   background-position: center;
   mask-image: radial-gradient(circle at center, black 20%, transparent 80%);
@@ -46,7 +46,7 @@
 .orb1 {
   width: 600px;
   height: 600px;
-  background: radial-gradient(circle, #00c0f3 0%, transparent 70%);
+  background: radial-gradient(circle, #005da4 0%, #00c0f3 30%, transparent 70%);
   top: -10%;
   left: -10%;
 }
@@ -54,7 +54,7 @@
 .orb2 {
   width: 500px;
   height: 500px;
-  background: radial-gradient(circle, #ffcc4d 0%, transparent 70%);
+  background: radial-gradient(circle, #ffe06a 0%, transparent 70%);
   bottom: -10%;
   right: -5%;
   animation-delay: -10s;
@@ -72,15 +72,15 @@
   width: 100%;
   max-width: 440px;
   padding: 48px;
-  background: rgba(10, 19, 36, 0.65);
+  background: rgba(4, 26, 52, 0.65);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(51, 221, 255, 0.15);
+  border: 1px solid rgba(0, 154, 204, 0.18);
   border-radius: var(--radius-xl);
   box-shadow: 
     0 24px 48px rgba(0, 0, 0, 0.4),
     inset 0 1px 0 rgba(255, 255, 255, 0.05),
-    0 0 40px rgba(0, 192, 243, 0.1);
+    0 0 40px rgba(0, 93, 164, 0.15);
   animation: formEntrance 0.8s cubic-bezier(0.16, 1, 0.3, 1);
   transform-style: preserve-3d;
 }
@@ -96,18 +96,19 @@
 }
 
 .logoIcon {
-  width: 56px;
-  height: 56px;
+  width: 96px;
+  height: 96px;
   margin: 0 auto 20px;
-  background: linear-gradient(135deg, rgba(0, 192, 243, 0.1), rgba(0, 192, 243, 0));
-  border: 1px solid rgba(0, 192, 243, 0.2);
-  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--celeste-400);
+  padding: 12px;
   box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.05), 0 8px 16px rgba(0, 0, 0, 0.2);
   position: relative;
+  overflow: hidden;
 }
 
 .logoIcon::after {
@@ -116,7 +117,7 @@
   inset: -1px;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, var(--celeste-300), transparent 50%);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2), transparent 50%);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: xor;
@@ -168,8 +169,8 @@
   font-family: var(--font-body);
   font-size: 0.9375rem;
   border-radius: var(--radius-md);
-  background: rgba(4, 11, 20, 0.5);
-  border: 1px solid rgba(51, 221, 255, 0.1);
+  background: rgba(2, 18, 38, 0.5);
+  border: 1px solid rgba(0, 93, 164, 0.2);
   color: var(--text-primary);
   transition: all var(--transition-normal);
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
@@ -182,7 +183,7 @@
 
 .inputField:focus {
   outline: none;
-  background: rgba(10, 19, 36, 0.8);
+  background: rgba(4, 26, 52, 0.8);
   border-color: var(--celeste-400);
   box-shadow: inset 0 2px 4px rgba(0,0,0,0.2), 0 0 0 3px rgba(0, 192, 243, 0.15);
 }
@@ -213,7 +214,7 @@
   font-weight: 600;
   font-size: 1rem;
   letter-spacing: 0.03em;
-  color: #040b14;
+  color: #021226;
   background: var(--gradient-primary);
   border: none;
   border-radius: var(--radius-md);
@@ -225,7 +226,7 @@
   gap: 12px;
   position: relative;
   overflow: hidden;
-  box-shadow: 0 4px 14px rgba(0, 192, 243, 0.3);
+  box-shadow: 0 4px 14px rgba(0, 93, 164, 0.4);
 }
 
 .submitBtn::before {
@@ -241,7 +242,7 @@
 
 .submitBtn:hover:not(:disabled) {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 192, 243, 0.4);
+  box-shadow: 0 8px 24px rgba(0, 93, 164, 0.5);
 }
 
 .submitBtn:hover:not(:disabled)::before {

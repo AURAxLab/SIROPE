@@ -22,8 +22,10 @@ SIROPE es una plataforma institucional para gestionar la participación de estud
 - **RBAC completo** — 5 roles, 29 acciones, verificación en cada operación
 - **Auditoría** — Registro de todas las mutaciones con estado previo/nuevo e IP
 - **Exportación CSV** — Reportes de participaciones y créditos con toast de confirmación
-- **Multi-institución** — Configuración institucional flexible (nombre, colores, auth mode)
-- **UI Premium** — Dark mode, glassmorphism, micro-animaciones, skeleton loading, responsive
+- **Multi-institución** — Configuración flexible (auth mode, logo institucional base)
+- **Identidad Institucional** — Paleta UCR Pantone (Celeste, Azul, Amarillo) implementada con CSS Variables
+- **Auditoría QA/QC** — Pipeline automatizado (10 passes: Security, Lint, Unit Tests, SSR Build, E2E Smoke Tests)
+- **UI Premium** — Dark mode profundo UCR, glassmorphism, micro-animaciones, skeleton loading, responsive
 
 ---
 

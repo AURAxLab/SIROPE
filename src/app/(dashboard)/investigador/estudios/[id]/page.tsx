@@ -66,9 +66,9 @@ export default async function EstudioDetalle({ params }: Params) {
   return (
     <div className="animate-fade-in">
       <nav style={{ marginBottom: 20 }}>
-        <a href="/investigador/estudios" style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textDecoration: 'none' }}>
+        <Link href="/investigador/estudios" style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textDecoration: 'none' }}>
           ← Volver a mis estudios
-        </a>
+        </Link>
       </nav>
 
       {/* Header */}

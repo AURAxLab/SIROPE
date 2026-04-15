@@ -7,6 +7,7 @@
 
 import { useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { createStudy } from '@/app/actions/studies';
 
 interface Props {
@@ -57,7 +58,7 @@ export default function NuevoEstudioForm({ semesterId, semesterName, ethicsCommi
       });
 
       if (result.success && result.data) {
-        router.push(`/investigador/estudios/${(result.data as any).id}`);
+        router.push(`/investigador/estudios/${(result.data as { id: string }).id}`);
       } else {
         setError(result.error || 'Error al crear estudio');
       }
@@ -67,9 +68,9 @@ export default function NuevoEstudioForm({ semesterId, semesterName, ethicsCommi
   return (
     <div className="animate-fade-in">
       <nav style={{ marginBottom: 20 }}>
-        <a href="/investigador/estudios" style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textDecoration: 'none' }}>
+        <Link href="/investigador/estudios" style={{ color: 'var(--text-muted)', fontSize: '0.875rem', textDecoration: 'none' }}>
           ← Volver a mis estudios
-        </a>
+        </Link>
       </nav>
 
       <h1 className="page-title" style={{ marginBottom: 8 }}>Nuevo Estudio 🔬</h1>
@@ -158,7 +159,7 @@ export default function NuevoEstudioForm({ semesterId, semesterName, ethicsCommi
           </div>
 
           <div style={{ display: 'flex', gap: 12, justifyContent: 'flex-end', marginTop: 8 }}>
-            <a href="/investigador/estudios" className="btn btn-secondary">Cancelar</a>
+            <Link href="/investigador/estudios" className="btn btn-secondary">Cancelar</Link>
             <button type="submit" className="btn btn-primary" disabled={isPending}>
               {isPending ? 'Creando...' : '🔬 Crear Estudio'}
             </button>

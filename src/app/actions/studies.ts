@@ -52,7 +52,7 @@ export async function getStudies(filters?: {
   }
 
   const role = session.user.role as Role;
-  let whereClause: Record<string, unknown> = {};
+  const whereClause: Record<string, unknown> = {};
 
   // Filtrar por rol
   if (role === 'ADMIN') {

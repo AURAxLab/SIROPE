@@ -1,6 +1,7 @@
 /**
  * SIROPE — Componente de Navegación (Sidebar)
- * Tema: UCR Celeste
+ * Paleta oficial UCR
+ * Logo institucional: sustituir /public/logo-institucion.svg
  */
 
 'use client';
@@ -102,9 +103,7 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
           </button>
           <div className={styles.brand}>
             <div className={styles.logo}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-              </svg>
+              <img src="/logo-institucion.svg" alt="Logo institucional" width={22} height={22} style={{ objectFit: 'contain' }} />
             </div>
             <span style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)', fontSize: '1.25rem' }}>SIROPE</span>
           </div>
@@ -125,9 +124,7 @@ export default function Sidebar({ userRole, userName, userEmail }: SidebarProps)
         <div className={styles.header}>
           <Link href="/" className={styles.brand}>
             <div className={styles.logo}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-              </svg>
+              <img src="/logo-institucion.svg" alt="Logo institucional" width={22} height={22} style={{ objectFit: 'contain' }} />
             </div>
             <span className={styles.brandName}>SIROPE</span>
           </Link>

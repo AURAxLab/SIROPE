@@ -96,7 +96,7 @@ export default async function MisEstudios() {
                     <td>{s.creditsWorth}</td>
                     <td>{s._count.timeslots}</td>
                     <td>{s._count.participations}</td>
-                    {!isPI && <td>{'principalInvestigator' in s ? (s as any).principalInvestigator.name : '—'}</td>}
+                    {!isPI && <td>{'principalInvestigator' in s ? (s as { principalInvestigator: { name: string } }).principalInvestigator.name : '—'}</td>}
                     <td>
                       <Link href={`/investigador/estudios/${s.id}`} className="btn btn-ghost btn-sm">
                         Ver →

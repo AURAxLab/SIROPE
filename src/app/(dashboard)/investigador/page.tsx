@@ -8,6 +8,7 @@
 
 import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import prisma from '@/lib/prisma';
 import type { Role } from '@/lib/validations';
 import { Microscope, Activity, Users, FileSignature, FolderSearch, Clock, ArrowRight, FlaskConical, Target } from 'lucide-react';
@@ -78,9 +79,9 @@ export default async function InvestigadorDashboard() {
           </p>
         </div>
         {isPI && (
-          <a href="/investigador/estudios/nuevo" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: '32px' }}>
+          <Link href="/investigador/estudios/nuevo" className="btn btn-primary" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: '32px' }}>
             <FlaskConical size={18} /> Instanciar Estudio
-          </a>
+          </Link>
         )}
       </div>
 
@@ -146,9 +147,9 @@ export default async function InvestigadorDashboard() {
               Instancie un nuevo estudio para someterlo a aprobación del comité ético y comenzar a reclutar.
             </p>
             {isPI && (
-              <a href="/investigador/estudios/nuevo" className="btn btn-primary" style={{ padding: '12px 32px', borderRadius: '32px' }}>
+              <Link href="/investigador/estudios/nuevo" className="btn btn-primary" style={{ padding: '12px 32px', borderRadius: '32px' }}>
                 Formular Protocolo
-              </a>
+              </Link>
             )}
           </div>
         ) : (
@@ -169,9 +170,9 @@ export default async function InvestigadorDashboard() {
                   return (
                     <tr key={study.id}>
                       <td style={{ paddingLeft: 32 }}>
-                        <a href={`/investigador/estudios/${study.id}`} style={{ fontWeight: 600, color: 'var(--text-primary)', textDecoration: 'none', transition: 'color 0.2s' }} onMouseEnter={e => e.currentTarget.style.color = 'var(--celeste-400)'} onMouseLeave={e => e.currentTarget.style.color = 'var(--text-primary)'}>
+                        <Link href={`/investigador/estudios/${study.id}`} style={{ fontWeight: 600, color: 'var(--text-primary)', textDecoration: 'none', transition: 'color 0.2s' }}>
                           {study.title}
-                        </a>
+                        </Link>
                       </td>
                       <td>
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 6, fontSize: '0.8rem', fontWeight: 600, color: statusInfo.color, background: `var(--surface-hover)`, padding: '4px 10px', borderRadius: 16 }}>
@@ -182,9 +183,9 @@ export default async function InvestigadorDashboard() {
                       <td style={{ textAlign: 'center', fontWeight: 500 }}>{study._count.timeslots}</td>
                       <td style={{ textAlign: 'center', fontWeight: 500 }}>{study._count.participations}</td>
                       <td style={{ paddingRight: 32, textAlign: 'right' }}>
-                        <a href={`/investigador/estudios/${study.id}`} style={{ color: 'var(--text-secondary)', display: 'inline-flex', padding: 8, background: 'var(--surface-hover)', borderRadius: '50%' }}>
+                        <Link href={`/investigador/estudios/${study.id}`} style={{ color: 'var(--text-secondary)', display: 'inline-flex', padding: 8, background: 'var(--surface-hover)', borderRadius: '50%' }}>
                           <ArrowRight size={16} />
-                        </a>
+                        </Link>
                       </td>
                     </tr>
                   );

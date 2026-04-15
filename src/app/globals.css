@@ -1,7 +1,7 @@
 /**
  * SIROPE — Design System
- * "UCR Celeste" — clean dark slate aesthetic
- * Palette: Celeste UCR on deep navy surfaces with gold accents
+ * Paleta oficial UCR — Pantone institucional
+ * Celeste UCR (298C) · Azul UCR (2945C) · Amarillo UCR (121C)
  * Typography: DM Serif Display (display) + Satoshi (body)
  */
 
@@ -22,76 +22,76 @@
    ============================================================ */
 
 :root {
-  /* Core Background Palette — Slate Navy */
-  --bg-deepest: #040b14;
-  --bg-base: #0a1324;
-  --bg-raised: #111d33;
-  --bg-elevated: #1a2944;
-  --bg-surface: #203355;
+  /* Core Background Palette — derived from Azul UCR (Pantone 2945C #005da4) */
+  --bg-deepest: #021226;
+  --bg-base: #041a34;
+  --bg-raised: #0a2647;
+  --bg-elevated: #12345c;
+  --bg-surface: #1c4470;
 
-  /* Primary Accent — Celeste UCR */
-  --celeste-50: #e5fbff;
-  --celeste-100: #ccf8ff;
-  --celeste-200: #99efff;
-  --celeste-300: #66e6ff;
-  --celeste-400: #33ddff;
+  /* Primary Accent — Celeste UCR (Pantone 298C) */
+  --celeste-50: #e0f6ff;
+  --celeste-100: #b3ecff;
+  --celeste-200: #80e0ff;
+  --celeste-300: #4dd4ff;
+  --celeste-400: #1ac8f8;
   --celeste-500: #00c0f3;
   --celeste-600: #009acc;
   --celeste-700: #007399;
   --celeste-800: #004d66;
   --celeste-900: #002633;
 
-  /* Secondary Accent — Oro (Gold) */
-  --oro-300: #ffe699;
-  --oro-400: #ffda73;
-  --oro-500: #ffcc4d;
-  --oro-600: #e6b800;
-  --oro-700: #b38f00;
+  /* Secondary Accent — Amarillo UCR (Pantone 121C) */
+  --oro-300: #fff1a8;
+  --oro-400: #ffeb85;
+  --oro-500: #ffe06a;
+  --oro-600: #dbbf3e;
+  --oro-700: #b39a1f;
 
   /* Semantic Colors */
   --color-success: #66bb6a;
   --color-success-dim: rgba(102, 187, 106, 0.12);
-  --color-warning: #ffda73;
-  --color-warning-dim: rgba(255, 218, 115, 0.12);
+  --color-warning: #ffe06a;
+  --color-warning-dim: rgba(255, 224, 106, 0.12);
   --color-error: #ef5350;
   --color-error-dim: rgba(239, 83, 80, 0.12);
-  --color-info: #33ddff;
-  --color-info-dim: rgba(51, 221, 255, 0.12);
+  --color-info: #1ac8f8;
+  --color-info-dim: rgba(26, 200, 248, 0.12);
 
-  /* Surface */
+  /* Surface — borders tinted with Azul UCR */
   --surface-bg: var(--bg-base);
   --surface-card: var(--bg-raised);
   --surface-elevated: var(--bg-elevated);
-  --surface-border: rgba(51, 221, 255, 0.12);
-  --surface-border-strong: rgba(51, 221, 255, 0.22);
-  --surface-hover: rgba(51, 221, 255, 0.08);
+  --surface-border: rgba(0, 93, 164, 0.22);
+  --surface-border-strong: rgba(0, 154, 204, 0.28);
+  --surface-hover: rgba(0, 192, 243, 0.08);
 
   /* Text */
-  --text-primary: #f0f4f8;
-  --text-secondary: #9cb2c9;
-  --text-muted: #647b96;
-  --text-inverse: #040b14;
+  --text-primary: #eef3f8;
+  --text-secondary: #8faec9;
+  --text-muted: #5a7b9a;
+  --text-inverse: #021226;
   --text-accent: var(--celeste-400);
 
-  /* Gradients */
-  --gradient-primary: linear-gradient(135deg, #009acc, #00c0f3, #66e6ff);
-  --gradient-hero: linear-gradient(135deg, #007399 0%, #00c0f3 50%, #66e6ff 100%);
-  --gradient-accent: linear-gradient(135deg, #ffda73, #33ddff);
-  --gradient-oro: linear-gradient(135deg, #e6b800, #ffcc4d, #ffe699);
+  /* Gradients — UCR tri-color harmonics */
+  --gradient-primary: linear-gradient(135deg, #005da4, #00c0f3, #4dd4ff);
+  --gradient-hero: linear-gradient(135deg, #005da4 0%, #00c0f3 50%, #4dd4ff 100%);
+  --gradient-accent: linear-gradient(135deg, #ffe06a, #00c0f3);
+  --gradient-oro: linear-gradient(135deg, #dbbf3e, #ffe06a, #fff1a8);
   --gradient-subtle: linear-gradient(135deg, var(--bg-base), var(--bg-raised));
 
   /* Glassmorphism */
-  --glass-bg: rgba(10, 19, 36, 0.82);
-  --glass-border: rgba(51, 221, 255, 0.15);
+  --glass-bg: rgba(4, 26, 52, 0.82);
+  --glass-border: rgba(0, 154, 204, 0.18);
   --glass-blur: 20px;
 
-  /* Shadows — cool-tinted */
+  /* Shadows — azul-tinted */
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 192, 243, 0.04);
-  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 192, 243, 0.06);
-  --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 192, 243, 0.08);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.35), 0 1px 3px rgba(0, 93, 164, 0.06);
+  --shadow-lg: 0 12px 28px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 93, 164, 0.08);
+  --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 93, 164, 0.1);
   --shadow-glow: 0 0 24px rgba(0, 192, 243, 0.25);
-  --shadow-glow-oro: 0 0 24px rgba(255, 204, 77, 0.2);
+  --shadow-glow-oro: 0 0 24px rgba(255, 224, 106, 0.22);
 
   /* Borders */
   --radius-sm: 6px;
@@ -271,7 +271,7 @@ a:hover {
 }
 
 .btn-accent:hover:not(:disabled) {
-  box-shadow: var(--shadow-lg), 0 0 20px rgba(51, 221, 255, 0.25);
+  box-shadow: var(--shadow-lg), 0 0 20px rgba(0, 192, 243, 0.25);
   transform: translateY(-1px);
 }
 
@@ -406,7 +406,7 @@ a:hover {
 .form-select:focus,
 .form-textarea:focus {
   border-color: var(--celeste-400);
-  box-shadow: 0 0 0 3px rgba(51, 221, 255, 0.15);
+  box-shadow: 0 0 0 3px rgba(0, 192, 243, 0.15);
 }
 
 .form-input:not(:placeholder-shown):invalid,
@@ -467,7 +467,7 @@ a:hover {
 }
 
 .badge-primary {
-  background: rgba(51, 221, 255, 0.12);
+  background: rgba(0, 192, 243, 0.12);
   color: var(--celeste-400);
 }
 
@@ -520,7 +520,7 @@ a:hover {
 }
 
 .table tbody tr:nth-child(even) td {
-  background: rgba(51, 221, 255, 0.02);
+  background: rgba(0, 93, 164, 0.04);
 }
 
 .table tbody tr:nth-child(even):hover td {
@@ -755,7 +755,7 @@ a:hover {
 
 .alert-info {
   background: var(--color-info-dim);
-  border: 1px solid rgba(51, 221, 255, 0.2);
+  border: 1px solid rgba(0, 192, 243, 0.2);
   color: var(--color-info);
 }
 
@@ -931,7 +931,7 @@ a:hover {
     display: block !important;
     position: fixed;
     inset: 0;
-    background: rgba(4, 11, 20, 0.7);
+    background: rgba(2, 18, 38, 0.7);
     z-index: 999;
     backdrop-filter: blur(4px);
   }
@@ -959,6 +959,6 @@ a:hover {
    ============================================================ */
 
 ::selection {
-  background: rgba(0, 192, 243, 0.3);
+  background: rgba(0, 192, 243, 0.25);
   color: var(--text-primary);
 }

@@ -14,6 +14,7 @@ import {
   Award, Clock, Calendar, BookOpen, MapPin, 
   Activity, ArrowRight, Zap, Target, Search, FileText
 } from 'lucide-react';
+import Link from 'next/link';
 
 export default async function EstudianteDashboard() {
   const session = await auth();
@@ -170,9 +171,9 @@ export default async function EstudianteDashboard() {
               <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', textAlign: 'center', margin: 0 }}>
                 Agenda despejada. No hay sesiones próximas.
               </p>
-              <a href="/estudiante/estudios" className="btn btn-primary btn-sm" style={{ width: '100%' }}>
+              <Link href="/estudiante/estudios" className="btn btn-primary btn-sm" style={{ width: '100%' }}>
                 <Search size={16} /> Explorar Catálogo
-              </a>
+              </Link>
             </div>
           )}
         </div>
@@ -215,9 +216,9 @@ export default async function EstudianteDashboard() {
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 24 }}>
               Revisa el catálogo para encontrar investigaciones disponibles y empezar a ganar créditos.
             </p>
-            <a href="/estudiante/estudios" className="btn btn-outline" style={{ background: 'var(--bg-raised)', border: '1px solid var(--surface-border-strong)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: '32px', textDecoration: 'none', transition: 'all 0.2s', fontWeight: 500 }}>
+            <Link href="/estudiante/estudios" className="btn btn-outline" style={{ background: 'var(--bg-raised)', border: '1px solid var(--surface-border-strong)', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', gap: 8, padding: '12px 24px', borderRadius: '32px', textDecoration: 'none', transition: 'all 0.2s', fontWeight: 500 }}>
               Ver {activeStudies} estudios disponibles <ArrowRight size={16} color="var(--celeste-400)" />
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="table-wrapper" style={{ border: 'none', borderRadius: 0 }}>

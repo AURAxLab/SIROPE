@@ -11,6 +11,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import type { Role } from '@/lib/validations';
+import Link from 'next/link';
 import TimeslotSignUp from './TimeslotSignUp';
 import PrescreenForm from './PrescreenForm';
 import styles from './detalle.module.css';
@@ -87,7 +88,7 @@ export default async function EstudioDetalle({ params }: Params) {
     <div className="animate-fade-in">
       {/* Breadcrumb */}
       <nav className={styles.breadcrumb}>
-        <a href="/estudiante/estudios">← Volver a estudios</a>
+        <Link href="/estudiante/estudios">← Volver a estudios</Link>
       </nav>
 
       {/* Header */}
@@ -126,9 +127,9 @@ export default async function EstudioDetalle({ params }: Params) {
               <> — {existingParticipation.timeslot.location}</>
             )}
           </p>
-          <a href="/estudiante/inscripciones" className="btn btn-secondary">
+          <Link href="/estudiante/inscripciones" className="btn btn-secondary">
             Ver mis inscripciones
-          </a>
+          </Link>
         </div>
       )}
 

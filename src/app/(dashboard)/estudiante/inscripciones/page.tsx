@@ -9,6 +9,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import type { Role } from '@/lib/validations';
+import Link from 'next/link';
 import CancelButton from './CancelButton';
 
 /**
@@ -42,14 +43,15 @@ export default async function MisInscripciones() {
         <div className="empty-state">
           <div className="empty-state-icon">📋</div>
           <p className="empty-state-text">No tienes inscripciones activas.</p>
-          <a href="/estudiante/estudios" className="btn btn-primary">
+          <Link href="/estudiante/estudios" className="btn btn-primary">
             Explorar Estudios
-          </a>
+          </Link>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
           {participations.map((p) => {
             const start = p.timeslot.startTime;
+            // eslint-disable-next-line react-hooks/purity
             const hoursUntil = (start.getTime() - Date.now()) / (1000 * 60 * 60);
             const canCancel = hoursUntil > 24;
 

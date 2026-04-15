@@ -9,6 +9,7 @@ import { auth } from '@/lib/auth';
 import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import type { Role } from '@/lib/validations';
+import Link from 'next/link';
 
 const STATUS_LABELS: Record<string, { label: string; badge: string }> = {
   SIGNED_UP: { label: 'Inscrito', badge: 'badge-info' },
@@ -68,9 +69,9 @@ export default async function Historial() {
         <div className="empty-state">
           <div className="empty-state-icon">📜</div>
           <p className="empty-state-text">No tienes participaciones registradas.</p>
-          <a href="/estudiante/estudios" className="btn btn-primary">
+          <Link href="/estudiante/estudios" className="btn btn-primary">
             Explorar Estudios
-          </a>
+          </Link>
         </div>
       ) : (
         <div className="card">

@@ -1,6 +1,7 @@
 /**
  * SIROPE Login Page
- * "UCR Celeste" — clean typography, glassmorphism panel.
+ * Paleta oficial UCR — glassmorphism panel
+ * Logo institucional: sustituir /public/logo-institucion.svg
  */
 
 'use client';
@@ -52,9 +53,7 @@ export default function LoginPage() {
       <div className={styles.loginCard}>
         <div className={styles.brandHeader}>
           <div className={styles.logoIcon}>
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-            </svg>
+            <img src="/logo-institucion.svg" alt="Logo institucional" width={64} height={64} style={{ objectFit: 'contain' }} />
           </div>
           <h1 className={styles.brandTitle}>SIROPE</h1>
           <p className={styles.brandSubtitle}>Universidad de Costa Rica</p>
