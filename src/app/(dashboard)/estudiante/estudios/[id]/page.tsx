@@ -116,7 +116,7 @@ export default async function EstudioDetalle({ params }: Params) {
         <div className={`card ${styles.enrolledCard}`}>
           <h3>✅ Ya estás inscrito en este estudio</h3>
           <p>
-            Tu timeslot: {existingParticipation.timeslot.startTime.toLocaleDateString('es-CR', {
+            Tu horario: {existingParticipation.timeslot.startTime.toLocaleDateString('es-CR', {
               weekday: 'long',
               day: 'numeric',
               month: 'long',

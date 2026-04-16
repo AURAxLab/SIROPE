@@ -7,6 +7,7 @@
 
 import { useState, useTransition } from 'react';
 import { createTimeslot } from '@/app/actions/timeslots';
+import ExcelImportModal from './ExcelImportModal';
 
 interface TimeslotData {
   id: string;
@@ -69,7 +70,7 @@ export default function TimeslotManager({ studyId, studyStatus, timeslots }: Tim
         setForm({ date: '', startTime: '09:00', endTime: '10:00', maxParticipants: '5', location: '' });
         window.location.reload();
       } else {
-        setError(result.error || 'Error al crear timeslot');
+        setError(result.error || 'Error al crear horario');
       }
     });
   }
@@ -80,9 +81,12 @@ export default function TimeslotManager({ studyId, studyStatus, timeslots }: Tim
       {canCreate && (
         <>
           {!showForm ? (
-            <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)} style={{ marginBottom: 16 }}>
-              + Nuevo Timeslot
-            </button>
+            <div style={{ display: 'flex', gap: 12, marginBottom: 16 }}>
+              <button className="btn btn-primary btn-sm" onClick={() => setShowForm(true)}>
+                + Nuevo Horario
+              </button>
+              <ExcelImportModal studyId={studyId} />
+            </div>
           ) : (
             <div style={{
               padding: 16,
@@ -133,9 +137,9 @@ export default function TimeslotManager({ studyId, studyStatus, timeslots }: Tim
         </>
       )}
 
-      {/* Timeslots list */}
+      {/* Horarios list */}
       {timeslots.length === 0 ? (
-        <p style={{ color: 'var(--text-muted)' }}>No hay timeslots creados.</p>
+        <p style={{ color: 'var(--text-muted)' }}>No hay horarios creados.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
           {timeslots.map((t) => {

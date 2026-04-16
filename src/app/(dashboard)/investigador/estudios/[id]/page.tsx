@@ -1,6 +1,6 @@
 /**
  * SIROPE — Detalle de Estudio (Investigador)
- * Vista completa con timeslots, participantes y acciones.
+ * Vista completa con horarios, participantes y acciones.
  */
 
 import { auth } from '@/lib/auth';
@@ -97,7 +97,7 @@ export default async function EstudioDetalle({ params }: Params) {
       <div className="stat-grid" style={{ marginBottom: 24 }}>
         <div className="stat-card">
           <div className="stat-value">{study.timeslots.length}</div>
-          <div className="stat-label">Timeslots</div>
+          <div className="stat-label">Horarios</div>
         </div>
         <div className="stat-card">
           <div className="stat-value">{study._count.participations}</div>
@@ -134,10 +134,10 @@ export default async function EstudioDetalle({ params }: Params) {
         </div>
       )}
 
-      {/* Timeslots */}
+      {/* Horarios */}
       <div className="card" style={{ marginBottom: 24 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-          <h2>🕐 Timeslots</h2>
+          <h2>🕐 Horarios</h2>
         </div>
         <TimeslotManager
           studyId={study.id}

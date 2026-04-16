@@ -1,6 +1,6 @@
 /**
- * SIROPE — Timeslots del Investigador
- * Vista global de todos los timeslots de mis estudios.
+ * SIROPE — Horarios del Investigador
+ * Vista global de todos los horarios de mis estudios.
  */
 
 import { auth } from '@/lib/auth';
@@ -41,7 +41,7 @@ export default async function TimeslotsPage() {
   return (
     <div className="animate-fade-in">
       <div className="page-header">
-        <h1 className="page-title">Timeslots 🕐</h1>
+        <h1 className="page-title">Horarios 🕐</h1>
       </div>
 
       {/* Stats */}
@@ -62,9 +62,9 @@ export default async function TimeslotsPage() {
 
       {/* Próximos */}
       <div className="card" style={{ marginBottom: 24 }}>
-        <h2 style={{ marginBottom: 16 }}>📅 Próximos Timeslots</h2>
+        <h2 style={{ marginBottom: 16 }}>📅 Próximos Horarios</h2>
         {upcoming.length === 0 ? (
-          <p style={{ color: 'var(--text-muted)' }}>No hay timeslots programados.</p>
+          <p style={{ color: 'var(--text-muted)' }}>No hay horarios programados.</p>
         ) : (
           <div className="table-wrapper">
             <table className="table">

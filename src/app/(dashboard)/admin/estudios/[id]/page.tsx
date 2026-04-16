@@ -86,7 +86,7 @@ export default async function AdminEstudioDetalle({ params }: Params) {
       <div className="stat-grid" style={{ marginBottom: 24 }}>
         <div className="stat-card">
           <div className="stat-value">{study.timeslots.length}</div>
-          <div className="stat-label">Franjas de Tiempo (Timeslots)</div>
+          <div className="stat-label">Franjas de Tiempo (Horarios)</div>
         </div>
         <div className="stat-card">
           <div className="stat-value">{study._count.participations}</div>
