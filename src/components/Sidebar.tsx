@@ -147,8 +147,9 @@ export default function Sidebar({ userRole, userName, userEmail, logoUrl = '/log
             <span className={styles.userName} title={userName}>{userName}</span>
             <span className={styles.userRole}>
               {userRole === 'ADMIN' ? 'Administrador' : 
-               userRole === 'RESEARCHER' ? 'Investigador' : 
-               userRole === 'PROFESSOR' ? 'Profesor' : 'Estudiante'}
+               userRole === 'INV_PRINCIPAL' ? 'Investigador Principal' :
+               userRole === 'INV_EJECUTOR' ? 'Investigador Ejecutor' : 
+               userRole === 'PROFESOR' ? 'Profesor' : 'Estudiante'}
             </span>
           </div>
         </div>

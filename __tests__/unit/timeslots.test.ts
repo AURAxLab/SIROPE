@@ -29,6 +29,7 @@ vi.mock('@/lib/prisma', () => ({
       findUnique: vi.fn(),
     },
     participation: {
+      findMany: vi.fn(),
       updateMany: vi.fn(),
     },
     waitlistEntry: {
@@ -49,6 +50,10 @@ vi.mock('@/lib/permissions', () => ({
 
 vi.mock('@/lib/audit', () => ({
   logAuditEvent: vi.fn(),
+}));
+
+vi.mock('@/lib/email', () => ({
+  sendCancellationConfirmation: vi.fn(),
 }));
 
 // Validations mock para que funcione con importTimeslots
@@ -251,6 +256,7 @@ describe('Timeslots Actions', () => {
         study: { principalInvestigatorId: 'u1', collaborators: [] },
       } as any);
       const cancelledTs = { id: 'ts-1', status: 'CANCELLED' };
+      vi.mocked(prisma.participation.findMany).mockResolvedValue([]);
       vi.mocked(prisma.timeslot.update).mockResolvedValue(cancelledTs as any);
 
       const res = await cancelTimeslot('ts-1');

@@ -26,6 +26,7 @@ vi.mock('@/lib/prisma', () => ({
       update: vi.fn(),
     },
     participation: {
+      findMany: vi.fn(),
       updateMany: vi.fn(),
     },
     waitlistEntry: {
@@ -45,6 +46,10 @@ vi.mock('@/lib/permissions', () => ({
 
 vi.mock('@/lib/audit', () => ({
   logAuditEvent: vi.fn(),
+}));
+
+vi.mock('@/lib/email', () => ({
+  sendCancellationConfirmation: vi.fn(),
 }));
 
 describe('Timeslots Server Actions', () => {
@@ -129,6 +134,7 @@ describe('Timeslots Server Actions', () => {
         },
       } as any);
 
+      vi.mocked(prisma.participation.findMany).mockResolvedValue([]);
       vi.mocked(prisma.timeslot.update).mockResolvedValue({ id: mockTimeslotId, status: 'CANCELLED' } as any);
 
       const result = await cancelTimeslot(mockTimeslotId);
