@@ -2,7 +2,7 @@
 
 > **Sistema de Registro Optativo de Participantes de Estudios**
 
-[![Tests](https://img.shields.io/badge/tests-398%20passed-brightgreen)](#tests)
+[![Tests](https://img.shields.io/badge/tests-575%20passed-brightgreen)](#tests)
 [![Next.js](https://img.shields.io/badge/Next.js-16-black)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)](https://typescriptlang.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue)](#licencia)
@@ -15,6 +15,7 @@ SIROPE es una plataforma institucional para gestionar la participación de estud
 
 - **Gestión de estudios** — Creación, aprobación y ciclo de vida completo (DRAFT → ACTIVE → CLOSED)
 - **Inscripción inteligente** — Preselección con cuestionarios, validación de capacidad, lista de espera
+- **Importación masiva de horarios** — Carga de sesiones desde Excel (.xlsx) con validación de fechas CR
 - **Créditos automáticos** — Asignación con 7 capas de validación (sistema, curso, estudio)
 - **Dashboard Analytics** — Métricas de usuarios, participaciones, estudios, créditos con progress bars
 - **Búsqueda y filtros** — Tablas con busqueda debounced, filtros por rol/estado, paginación server-side
@@ -80,8 +81,8 @@ SIROPE es una plataforma institucional para gestionar la participación de estud
 ### 1. Clonar el repositorio
 
 ```bash
-git clone https://github.com/your-org/sirope.git
-cd sirope
+git clone https://github.com/AURAxLab/SIROPE.git
+cd SIROPE
 ```
 
 ### 2. Instalar dependencias
@@ -131,9 +132,10 @@ npm run dev
 | Campo | Valor |
 |---|---|
 | Email | `admin@universidad.cr` |
-| Contraseña | `Admin123!` |
+| Contraseña (seed básico) | `Sirope2026!` |
+| Contraseña (seed demo) | `Demo2026!` |
 
-> ⚠️ **Cambie esta contraseña inmediatamente en producción.**
+> ⚠️ **Cambie estas contraseñas inmediatamente en producción.**
 
 ---
 
@@ -146,7 +148,8 @@ npm start            # Servidor de producción
 npm run lint         # Linting con ESLint
 npm run test         # Tests con Vitest (watch mode)
 npm run test:run     # Tests una sola vez
-npm run seed         # Seed de datos iniciales
+npm run seed         # Seed básico (6 usuarios, password Sirope2026!)
+npm run seed:demo    # Seed demo (15+ usuarios, 5 estudios, password Demo2026!)
 npm run db:push      # Aplicar schema a la DB
 npm run db:studio    # Prisma Studio (GUI de la DB)
 npm run db:generate  # Regenerar cliente Prisma
@@ -184,8 +187,13 @@ npx vitest run --coverage
 | `validations.test.ts` | 59 | Todos los schemas Zod |
 | `studies-approval.test.ts` | 59 | State machine, CRUD, RBAC |
 | `timeslots-participation.test.ts` | 54 | Timeslots, inscripción, completitud |
+| `timeslots.test.ts` | 19 | CRUD, cancelación, importación Excel |
+| `actions/timeslots.test.ts` | 21 | Server actions cancel/create/update/import |
+| `actions/participation.test.ts` | 36 | Inscripción, waitlist, no-show |
+| `auth.test.ts` | 36 | Autenticación, hashing, LDAP |
 | `credits.test.ts` | 20 | Límites de créditos |
-| **Total** | **398** | — |
+| Otros (8 archivos) | 95 | Rate-limit, cron, notificaciones, etc. |
+| **Total** | **575** | — |
 
 ---
 
@@ -203,13 +211,13 @@ sirope/
 │   │   ├── actions/                  # 12 módulos, 47+ server actions
 │   │   ├── api/                      # Auth, cron, course-students, notifications
 │   │   └── login/                    # Login con glassmorphism
-│   ├── components/                   # Sidebar, Toast, Skeleton, NotificationBell, ExportCSV
-│   ├── lib/                          # Permisos, validaciones, email, audit
+│   ├── components/                   # Sidebar, Toast, Skeleton, NotificationBell, ExportCSV, ExcelImportModal
+│   ├── lib/                          # Permisos, validaciones, email, audit, rate-limit
 │   └── types/                        # Tipos TypeScript compartidos
 ├── prisma/
 │   ├── schema.prisma                 # 16 modelos, relaciones y constraints
 │   └── seed.ts                       # Datos iniciales de prueba
-├── __tests__/                        # 398 tests unitarios
+├── __tests__/                        # 575 tests unitarios (17 archivos)
 ├── docs/                             # Guías por rol
 ├── DEPLOY.md                         # Guía de despliegue completa
 └── README.md                         # Este archivo
