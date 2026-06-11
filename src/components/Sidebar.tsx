@@ -12,7 +12,7 @@ import { useState, useEffect } from 'react';
 import { 
   Home, Users, BookOpen, Calendar, 
   Settings, UserPlus, CheckSquare, 
-  BarChart2, FileText, ChevronLeft, ChevronRight, Menu, Activity
+  BarChart2, FileText, ChevronLeft, ChevronRight, Menu, Activity, LogOut
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import NotificationBell from './NotificationBell';
@@ -180,6 +180,20 @@ export default function Sidebar({ userRole, userName, userEmail, logoUrl = '/log
             </div>
           ))}
         </nav>
+
+        <div className={styles.sidebarFooter}>
+          <button
+            className={styles.logoutBtn}
+            onClick={() => {
+              fetch('/api/auth/signout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ csrfToken: '' }) })
+                .then(() => window.location.href = '/login');
+            }}
+            title="Cerrar sesión"
+          >
+            <LogOut size={20} />
+            <span className={styles.navLabel}>Cerrar sesión</span>
+          </button>
+        </div>
       </aside>
     </>
   );

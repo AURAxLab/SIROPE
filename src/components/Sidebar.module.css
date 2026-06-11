@@ -281,3 +281,35 @@
 .sidebarCollapsed .userDetails {
   display: none;
 }
+
+.sidebarFooter {
+  margin-top: auto;
+  padding: 16px;
+  border-top: 1px solid var(--surface-border);
+}
+
+.logoutBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 16px;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.logoutBtn:hover {
+  background: rgba(239, 68, 68, 0.08);
+  color: var(--color-error, #ef4444);
+  border-color: rgba(239, 68, 68, 0.2);
+}
+
+.sidebarCollapsed .logoutBtn .navLabel {
+  display: none;
+}
