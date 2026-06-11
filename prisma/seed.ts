@@ -11,7 +11,8 @@
 
 import 'dotenv/config';
 import bcryptjs from 'bcryptjs';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaPg } from '@prisma/adapter-pg';
+import pg from 'pg';
 
 /**
  * Ejecuta el seed completo de la base de datos.
@@ -22,9 +23,13 @@ async function main() {
   // Prisma v7: importar dinÃ¡micamente el cliente generado (ESM)
   const { PrismaClient } = await import('../src/generated/prisma/client.js');
 
-  // Crear adaptador SQLite y cliente Prisma
-  const dbUrl = process.env.DATABASE_URL || 'file:./data/dev.db';
-  const adapter = new PrismaBetterSqlite3({ url: dbUrl });
+  // Crear adaptador PostgreSQL y cliente Prisma
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error('DATABASE_URL environment variable is required');
+  }
+  const pool = new pg.Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
   const prisma = new PrismaClient({ adapter });
 
   /** ContraseÃ±a por defecto para todos los usuarios de prueba. */

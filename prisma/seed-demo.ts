@@ -16,12 +16,17 @@
 
 import 'dotenv/config';
 import bcryptjs from 'bcryptjs';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaPg } from '@prisma/adapter-pg';
+import pg from 'pg';
 
 async function main() {
   const { PrismaClient } = await import('../src/generated/prisma/client.js');
-  const dbUrl = process.env.DATABASE_URL || 'file:./data/dev.db';
-  const adapter = new PrismaBetterSqlite3({ url: dbUrl });
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error('DATABASE_URL environment variable is required');
+  }
+  const pool = new pg.Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
   const prisma = new PrismaClient({ adapter });
 
   const PASSWORD = 'Demo2026!';
