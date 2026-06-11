@@ -2,26 +2,30 @@
  * SIROPE — Sistema de Registro Optativo de Participantes de Estudios
  * @author Alexander Barquero Elizondo, Ph.D.
  *
- * Cliente Prisma — Singleton
+ * Cliente Prisma — Singleton (PostgreSQL)
  * Garantiza una única instancia del cliente Prisma en desarrollo
  * para evitar agotar las conexiones de base de datos con hot reload.
- * Usa el adaptador better-sqlite3 para Prisma v7.
+ * Usa el adaptador pg para PostgreSQL en producción.
  */
 
 import { PrismaClient } from '@/generated/prisma/client';
-import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
+import { PrismaPg } from '@prisma/adapter-pg';
+import pg from 'pg';
 
 /**
- * Crea una nueva instancia del cliente Prisma con el adaptador SQLite.
- * El path al archivo .db se toma de DATABASE_URL (sin el prefijo "file:").
+ * Crea una nueva instancia del cliente Prisma con el adaptador PostgreSQL.
+ * La conexión se toma de DATABASE_URL.
  *
  * @returns Nueva instancia de PrismaClient configurada
  */
 function createPrismaClient(): PrismaClient {
-  const dbUrl = process.env.DATABASE_URL || 'file:./prisma/dev.db';
-  const dbPath = dbUrl.replace('file:', '');
+  const connectionString = process.env.DATABASE_URL;
+  if (!connectionString) {
+    throw new Error('DATABASE_URL environment variable is required');
+  }
 
-  const adapter = new PrismaBetterSqlite3({ url: `file:${dbPath}` });
+  const pool = new pg.Pool({ connectionString });
+  const adapter = new PrismaPg(pool);
 
   return new PrismaClient({ adapter });
 }

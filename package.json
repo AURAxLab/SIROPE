@@ -16,10 +16,10 @@
     "test:run": "vitest run"
   },
   "dependencies": {
-    "@prisma/adapter-better-sqlite3": "^7.5.0",
+    "@prisma/adapter-pg": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "bcryptjs": "^3.0.3",
-    "better-sqlite3": "^12.8.0",
+    "pg": "^8.16.0",
     "dotenv": "^17.3.1",
     "ldapts": "^8.1.7",
     "lucide-react": "^1.7.0",
@@ -33,7 +33,7 @@
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
-    "@types/better-sqlite3": "^7.6.13",
+    "@types/pg": "^8.15.4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

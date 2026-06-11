@@ -1,5 +1,5 @@
 # ============================================================
-# SIROPE — Docker Compose
+# SIROPE — Docker Compose (PostgreSQL)
 # ============================================================
 # Uso:
 #   docker compose up -d         # Arrancar
@@ -15,19 +15,40 @@ services:
     ports:
       - "3000:3000"
     environment:
+      - DATABASE_URL=${DATABASE_URL}
       - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-cambiar-este-secreto-en-produccion}
       - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
-      - SEED_ON_INIT=${SEED_ON_INIT:-true}
-    volumes:
-      - sirope-data:/app/data
+      - SEED_ON_INIT=${SEED_ON_INIT:-false}
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/login"]
       interval: 30s
       timeout: 5s
       retries: 3
+      start_period: 30s
+
+  db:
+    image: postgres:18-alpine
+    container_name: sirope-db
+    environment:
+      POSTGRES_DB: sirope
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d sirope"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
       start_period: 10s
 
 volumes:
-  sirope-data:
+  pgdata:
     driver: local
