@@ -11,7 +11,7 @@ import { redirect } from 'next/navigation';
 import prisma from '@/lib/prisma';
 import type { Role } from '@/lib/validations';
 import { 
-  Award, Clock, Calendar, BookOpen, MapPin, 
+  Award, Clock, Calendar, MapPin, 
   Activity, ArrowRight, Zap, Target, Search, FileText
 } from 'lucide-react';
 import Link from 'next/link';

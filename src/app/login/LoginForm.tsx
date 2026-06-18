@@ -86,6 +86,7 @@ export default function LoginForm({ logoUrl = '/logo-institucion.svg', universit
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              aria-label="Correo electrónico"
             />
           </div>
 
@@ -101,6 +102,7 @@ export default function LoginForm({ logoUrl = '/logo-institucion.svg', universit
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
+              aria-label="Contraseña"
             />
           </div>
 

@@ -30,7 +30,7 @@ interface TimeslotSignUpProps {
  * Lista de timeslots con disclaimer de participación voluntaria
  * y botón de inscripción con capacidad en tiempo real.
  */
-export default function TimeslotSignUp({ timeslots, studyId, ethicsApproved, ethicsNote, ethicsCommitteeName = 'Comité Ético' }: TimeslotSignUpProps) {
+export default function TimeslotSignUp({ timeslots, ethicsApproved, ethicsNote, ethicsCommitteeName = 'Comité Ético' }: TimeslotSignUpProps) {
   const [isPending, startTransition] = useTransition();
   const [signingUpId, setSigningUpId] = useState<string | null>(null);
   const [error, setError] = useState('');

@@ -21,6 +21,13 @@ import {
 } from '@/lib/validations';
 import type { Role } from '@/lib/validations';
 import { hashPassword } from '@/lib/auth-utils';
+import { z } from 'zod';
+
+/** Zod schema for system config key/value updates. */
+const systemConfigSchema = z.object({
+  key: z.string().min(1, 'La clave es requerida').max(255, 'La clave es demasiado larga'),
+  value: z.string().min(0, 'El valor es requerido').max(10000, 'El valor es demasiado largo'),
+});
 
 // ============================================================
 // Tipos
@@ -225,18 +232,15 @@ export async function resetUserPassword(userId: string): Promise<ActionResult<{ 
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) return { success: false, error: 'Usuario no encontrado' };
 
-  // Generar contraseña temporal de 12 caracteres
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$';
-  let tempPassword = '';
-  for (let i = 0; i < 12; i++) {
-    tempPassword += chars[Math.floor(Math.random() * chars.length)];
-  }
+  // Generar contraseña temporal criptográficamente segura (12 caracteres)
+  const { randomBytes } = await import('crypto');
+  const tempPassword = randomBytes(9).toString('base64url').slice(0, 12);
 
   const hashedPassword = await hashPassword(tempPassword);
 
   await prisma.user.update({
     where: { id: userId },
-    data: { passwordHash: hashedPassword },
+    data: { passwordHash: hashedPassword, mustChangePassword: true },
   });
 
   await logAuditEvent({
@@ -420,6 +424,13 @@ export async function updateSystemConfig(
 
   const role = session.user.role as Role;
   requirePermission(role, ACTIONS.MANAGE_SYSTEM_CONFIG);
+
+  // Validate input with Zod schema
+  const parsed = systemConfigSchema.safeParse({ key, value });
+  if (!parsed.success) {
+    const firstError = parsed.error.issues[0]?.message || 'Datos inválidos';
+    return { success: false, error: firstError };
+  }
 
   const existing = await prisma.systemConfig.findUnique({ where: { key } });
   const previousValue = existing?.value;
@@ -800,7 +811,7 @@ export async function getAdminStudies({
 
   const skip = (page - 1) * pageSize;
 
-  const where: any = {};
+  const where: Record<string, unknown> = {};
   if (status) {
     where.status = status;
   }

@@ -45,8 +45,6 @@ interface EmailResult {
  * @returns Resultado del envío
  */
 export async function sendEmail(params: EmailParams): Promise<EmailResult> {
-  const { to, subject, text, html } = params;
-
   // En desarrollo, solo loguear
   if (process.env.NODE_ENV === 'development') {
     return { success: true };
@@ -54,13 +52,40 @@ export async function sendEmail(params: EmailParams): Promise<EmailResult> {
 
   // En producción, intentar enviar vía SMTP
   try {
-    // TODO: Integrar con servicio SMTP (Resend, Nodemailer, etc.)
-    // Por ahora, loguear como fallback
-    console.warn(`[EMAIL] Envío no configurado. Destinatario: ${to}, Asunto: ${subject}`);
+    const smtpHost = process.env.SMTP_HOST;
+    const smtpPort = process.env.SMTP_PORT;
+    const smtpUser = process.env.SMTP_USER;
+    const smtpPass = process.env.SMTP_PASS;
+    const smtpFrom = process.env.SMTP_FROM;
+
+    // Graceful degradation: si no hay config SMTP, loguear y continuar
+    if (!smtpHost || !smtpPort) {
+      console.warn(`[EMAIL] SMTP no configurado. Destinatario: ${params.to}, Asunto: ${params.subject}`);
+      return { success: true };
+    }
+
+    // Importar nodemailer dinámicamente para evitar errores si no está instalado
+    const nodemailer = await import('nodemailer');
+
+    const transport = nodemailer.createTransport({
+      host: smtpHost,
+      port: parseInt(smtpPort, 10),
+      secure: parseInt(smtpPort, 10) === 465,
+      auth: smtpUser && smtpPass ? { user: smtpUser, pass: smtpPass } : undefined,
+    });
+
+    await transport.sendMail({
+      from: smtpFrom || `SIROPE <noreply@${smtpHost}>`,
+      to: params.to,
+      subject: params.subject,
+      text: params.text,
+      html: params.html,
+    });
+
     return { success: true };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Error desconocido';
-    console.error(`[EMAIL] Error enviando correo a ${to}: ${errorMessage}`);
+    console.error(`[EMAIL] Error enviando correo a ${params.to}: ${errorMessage}`);
     return { success: false, error: errorMessage };
   }
 }

@@ -51,8 +51,8 @@
   /* Semantic Colors */
   --color-success: #66bb6a;
   --color-success-dim: rgba(102, 187, 106, 0.12);
-  --color-warning: #ffe06a;
-  --color-warning-dim: rgba(255, 224, 106, 0.12);
+  --color-warning: #b39a1f;
+  --color-warning-dim: rgba(179, 154, 31, 0.12);
   --color-error: #ef5350;
   --color-error-dim: rgba(239, 83, 80, 0.12);
   --color-info: #1ac8f8;
@@ -91,7 +91,7 @@
   --shadow-lg: 0 12px 28px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(0, 93, 164, 0.03);
   --shadow-xl: 0 24px 48px rgba(15, 23, 42, 0.1), 0 4px 12px rgba(0, 93, 164, 0.05);
   --shadow-glow: 0 8px 24px rgba(0, 93, 164, 0.12);
-  --shadow-glow-oro: 0 8px 24px rgba(2dbbf3e, 0.18);
+  --shadow-glow-oro: 0 8px 24px rgba(219, 191, 62, 0.18);
 
   /* Borders / Organic Shapes */
   --radius-sm: 8px;
@@ -102,7 +102,7 @@
 
   /* Typography */
   --font-display: 'DM Serif Display', 'Georgia', serif;
-  --font-body: 'Satoshi', 'General Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 
   /* Transitions */

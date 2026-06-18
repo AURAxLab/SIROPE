@@ -9,7 +9,7 @@
 
 import { redirect } from 'next/navigation';
 import { auth } from '@/lib/auth';
-import { getDashboardPathForRole, ROLE_LABELS } from '@/lib/permissions';
+import { ROLE_LABELS } from '@/lib/permissions';
 import Sidebar from '@/components/Sidebar';
 import type { Role } from '@/lib/validations';
 import prisma from '@/lib/prisma';
@@ -30,8 +30,20 @@ export default async function DashboardLayout({
     redirect('/login');
   }
 
+  // Forzar cambio de contraseña si fue reseteada por admin
+  const mustChangePassword = (session.user as { mustChangePassword?: boolean }).mustChangePassword;
+  if (mustChangePassword) {
+    const { headers: getHeaders } = await import('next/headers');
+    const headersList = await getHeaders();
+    const pathname = headersList.get('x-next-url') || headersList.get('x-invoke-path') || '';
+    // Only allow the profile page; redirect everything else
+    if (!pathname.startsWith('/perfil')) {
+      redirect('/perfil?changePassword=true');
+    }
+  }
+
   const role = session.user.role as Role;
-  const roleLabel = ROLE_LABELS[role] || 'Usuario';
+  const _roleLabel = ROLE_LABELS[role] || 'Usuario';
 
   const logoConfig = await prisma.systemConfig.findUnique({ where: { key: 'INSTITUTION_LOGOURL' } });
   const logoUrl = logoConfig?.value || '/logo-institucion.svg';

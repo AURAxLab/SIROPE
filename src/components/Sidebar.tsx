@@ -9,10 +9,11 @@
 import { usePathname } from 'next/navigation';
 import Link from 'next/link';
 import { useState, useEffect } from 'react';
+import { signOut } from 'next-auth/react';
 import { 
   Home, Users, BookOpen, Calendar, 
-  Settings, UserPlus, CheckSquare, 
-  BarChart2, FileText, ChevronLeft, ChevronRight, Menu, Activity, LogOut
+  Settings, CheckSquare, 
+  BarChart2, FileText, ChevronLeft, ChevronRight, Menu, Activity, LogOut, User
 } from 'lucide-react';
 import styles from './Sidebar.module.css';
 import NotificationBell from './NotificationBell';
@@ -37,24 +38,29 @@ const getNavItems = (role: string) => {
         { href: '/admin/auditoria', label: 'Auditoría', icon: FileText, section: 'Operaciones' },
         { href: '/admin/analytics', label: 'Analytics', icon: BarChart2, section: 'Sistema' },
         { href: '/admin/configuracion', label: 'Configuración', icon: Settings, section: 'Sistema' },
+        { href: '/perfil', label: 'Mi Perfil', icon: User, section: 'Cuenta' },
       ];
-    case 'RESEARCHER':
+    case 'INV_PRINCIPAL':
+    case 'INV_EJECUTOR':
       return [
         { href: '/investigador', label: 'Dashboard', icon: Home, section: 'General' },
         { href: '/investigador/estudios', label: 'Mis Estudios', icon: BookOpen, section: 'Investigación' },
         { href: '/investigador/estudios/nuevo', label: 'Nuevo Estudio', icon: FileText, section: 'Investigación' },
+        { href: '/perfil', label: 'Mi Perfil', icon: User, section: 'Cuenta' },
       ];
-    case 'PROFESSOR':
+    case 'PROFESOR':
       return [
         { href: '/profesor', label: 'Dashboard', icon: Home, section: 'General' },
         { href: '/profesor/cursos', label: 'Mis Cursos', icon: BookOpen, section: 'Académico' },
         { href: '/profesor/estudiantes', label: 'Mis Estudiantes', icon: Users, section: 'Académico' },
+        { href: '/perfil', label: 'Mi Perfil', icon: User, section: 'Cuenta' },
       ];
-    case 'STUDENT':
+    case 'ESTUDIANTE':
       return [
         { href: '/estudiante', label: 'Dashboard', icon: Home, section: 'General' },
         { href: '/estudiante/estudios', label: 'Estudios Disponibles', icon: BookOpen, section: 'Participación' },
         { href: '/estudiante/historial', label: 'Mi Historial', icon: Activity, section: 'Participación' },
+        { href: '/perfil', label: 'Mi Perfil', icon: User, section: 'Cuenta' },
       ];
     default:
       return [];
@@ -160,7 +166,10 @@ export default function Sidebar({ userRole, userName, userEmail, logoUrl = '/log
               <div className={styles.sectionTitle}>{section}</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                 {navItems.filter(item => item.section === section).map(item => {
-                  const isActive = pathname === item.href || (item.href !== '/' && pathname.startsWith(item.href));
+                  const basePath = navItems[0]?.href; // The dashboard item is always first
+                  const isActive = item.href === basePath 
+                    ? pathname === item.href 
+                    : pathname === item.href || pathname.startsWith(item.href + '/');
                   const Icon = item.icon;
                   
                   return (
@@ -184,10 +193,7 @@ export default function Sidebar({ userRole, userName, userEmail, logoUrl = '/log
         <div className={styles.sidebarFooter}>
           <button
             className={styles.logoutBtn}
-            onClick={() => {
-              fetch('/api/auth/signout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ csrfToken: '' }) })
-                .then(() => window.location.href = '/login');
-            }}
+            onClick={() => signOut({ callbackUrl: '/login' })}
             title="Cerrar sesión"
           >
             <LogOut size={20} />

@@ -23,7 +23,7 @@ interface PrescreenFormProps {
 /**
  * Formulario de prescreen con botones Sí/No por pregunta.
  */
-export default function PrescreenForm({ questions, studentId, studyId }: PrescreenFormProps) {
+export default function PrescreenForm({ questions, studyId }: PrescreenFormProps) {
   const [answers, setAnswers] = useState<Record<string, boolean>>({});
   const [isPending, startTransition] = useTransition();
   const [error, setError] = useState('');

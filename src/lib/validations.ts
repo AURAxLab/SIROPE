@@ -136,6 +136,43 @@ export const resetPasswordSchema = z.object({
 );
 
 // ============================================================
+// Schemas de cambio de contraseña y registro de estudiante
+// ============================================================
+
+/** Schema para cambio de contraseña autenticado. */
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().min(1, 'La contraseña actual es requerida'),
+  newPassword: z
+    .string()
+    .min(8, 'Mínimo 8 caracteres')
+    .regex(/[A-Z]/, 'Debe contener al menos una mayúscula')
+    .regex(/[0-9]/, 'Debe contener al menos un número'),
+  confirmPassword: z.string(),
+}).refine(
+  (data) => data.newPassword === data.confirmPassword,
+  { message: 'Las contraseñas no coinciden', path: ['confirmPassword'] }
+);
+
+/** Schema para auto-registro de estudiantes. */
+export const registerStudentSchema = z.object({
+  name: z.string().min(2, 'Nombre requerido'),
+  email: z.string().email('Email inválido'),
+  studentId: z
+    .string()
+    .min(1, 'Carné requerido')
+    .regex(/^[A-Z][0-9]{5}$/, 'Formato: B12345'),
+  password: z
+    .string()
+    .min(8, 'Mínimo 8 caracteres')
+    .regex(/[A-Z]/, 'Debe contener mayúscula')
+    .regex(/[0-9]/, 'Debe contener número'),
+  confirmPassword: z.string(),
+}).refine(
+  (data) => data.password === data.confirmPassword,
+  { message: 'Las contraseñas no coinciden', path: ['confirmPassword'] }
+);
+
+// ============================================================
 // Schemas de configuración institucional
 // ============================================================
 

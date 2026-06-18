@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'No autenticado' }, { status: 401 });
   }
 
-  const role = (request.nextUrl.searchParams.get('role') || session.user.role) as Role;
+  const role = session.user.role as Role;
   const notifications: Notification[] = [];
 
   if (role === 'ADMIN') {
@@ -88,7 +88,7 @@ export async function GET(request: NextRequest) {
     const upcomingParticipations = await prisma.participation.count({
       where: {
         studentId: session.user.id,
-        status: 'CONFIRMED',
+        status: 'SIGNED_UP',
         timeslot: { startTime: { gte: new Date() } },
       },
     });

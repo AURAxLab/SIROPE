@@ -62,6 +62,7 @@ export default function NotificationBell({ role }: NotificationBellProps) {
           color: 'var(--text-primary)',
         }}
         title="Notificaciones"
+        aria-label="Notificaciones"
       >
         🔔
         {count > 0 && (

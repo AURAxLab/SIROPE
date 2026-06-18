@@ -14,6 +14,14 @@ import prisma from '@/lib/prisma';
 import { requirePermission, ACTIONS } from '@/lib/permissions';
 import { logAuditEvent } from '@/lib/audit';
 import type { Role } from '@/lib/validations';
+import { z } from 'zod';
+
+/** Zod schema for alternative assignment submission. */
+const alternativeAssignmentSchema = z.object({
+  courseId: z.string().min(1, 'ID de curso requerido'),
+  description: z.string().min(20, 'La descripción debe tener al menos 20 caracteres'),
+  credits: z.number().gt(0, 'Los créditos deben ser mayores a 0').lte(5, 'Los créditos no pueden superar 5'),
+});
 
 // ============================================================
 // Tipos
@@ -162,13 +170,11 @@ export async function submitAlternativeAssignment(formData: {
   const role = session.user.role as Role;
   requirePermission(role, ACTIONS.ASSIGN_CREDITS);
 
-  // Validaciones básicas
-  if (!formData.description || formData.description.length < 20) {
-    return { success: false, error: 'La descripción debe tener al menos 20 caracteres' };
-  }
-
-  if (formData.credits <= 0 || formData.credits > 5) {
-    return { success: false, error: 'Los créditos deben estar entre 0.5 y 5' };
+  // Validate input with Zod schema
+  const parsed = alternativeAssignmentSchema.safeParse(formData);
+  if (!parsed.success) {
+    const firstError = parsed.error.issues[0]?.message || 'Datos inválidos';
+    return { success: false, error: firstError };
   }
 
   // Verificar que el curso existe y acepta opt-in

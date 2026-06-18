@@ -1,3 +1,6 @@
+// Set DATABASE_URL before any imports to prevent Prisma module initialization failure
+process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test';
+
 import { describe, it, expect, vi } from 'vitest';
 import { hashPassword, verifyPassword } from '@/lib/auth';
 

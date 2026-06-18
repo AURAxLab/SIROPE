@@ -71,6 +71,7 @@ model User {
   id           String  @id @default(cuid())
   email        String  @unique
   passwordHash String
+  mustChangePassword Boolean @default(false)
   name         String
   role         String  // ADMIN | PROFESOR | INV_PRINCIPAL | INV_EJECUTOR | ESTUDIANTE
   studentId    String? // Carné o ID estudiantil, solo para ESTUDIANTE

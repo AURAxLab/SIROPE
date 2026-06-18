@@ -89,7 +89,7 @@ export default function ExcelImportModal({ studyId }: Props) {
           defval: '', 
           raw: false, 
           dateNF: 'yyyy-mm-dd' 
-        }) as Array<any>;
+        }) as Array<Record<string, unknown>>;
         
         if (rows.length === 0) {
           toast('El archivo está vacío.', 'error');
@@ -145,8 +145,9 @@ export default function ExcelImportModal({ studyId }: Props) {
         } else {
           toast(res.error || 'Fallo general al procesar la importación', 'error');
         }
-      } catch (err: any) {
-        toast(`Error al leer archivo: ${err.message}`, 'error');
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : 'Error desconocido';
+        toast(`Error al leer archivo: ${message}`, 'error');
       }
     });
   };

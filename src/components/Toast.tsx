@@ -105,6 +105,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             </span>
             <button
               onClick={() => dismiss(t.id)}
+              aria-label="Cerrar notificación"
               style={{
                 background: 'rgba(255,255,255,0.05)',
                 border: '1px solid transparent',

@@ -14,6 +14,13 @@ import prisma from '@/lib/prisma';
 import { requirePermission, ACTIONS } from '@/lib/permissions';
 import { logAuditEvent } from '@/lib/audit';
 import type { Role } from '@/lib/validations';
+import { z } from 'zod';
+
+/** Zod schema for collaborator action params. */
+const collaboratorParamsSchema = z.object({
+  studyId: z.string().min(1, 'studyId requerido'),
+  userId: z.string().min(1, 'userId requerido'),
+});
 
 // ============================================================
 // Tipos
@@ -87,6 +94,12 @@ export async function addCollaborator(
 
   const role = session.user.role as Role;
   requirePermission(role, ACTIONS.MANAGE_COLLABORATORS);
+
+  // Validate input params
+  const parsed = collaboratorParamsSchema.safeParse({ studyId, userId });
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message || 'Parámetros inválidos' };
+  }
 
   // Verificar que el estudio existe y pertenece al IP
   const study = await prisma.study.findUnique({
@@ -163,6 +176,12 @@ export async function removeCollaborator(
 
   const role = session.user.role as Role;
   requirePermission(role, ACTIONS.MANAGE_COLLABORATORS);
+
+  // Validate input params
+  const parsed = collaboratorParamsSchema.safeParse({ studyId, userId });
+  if (!parsed.success) {
+    return { success: false, error: parsed.error.issues[0]?.message || 'Parámetros inválidos' };
+  }
 
   // Verificar propiedad del estudio
   const study = await prisma.study.findUnique({

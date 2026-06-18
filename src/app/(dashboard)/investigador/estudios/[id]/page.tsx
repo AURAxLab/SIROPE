@@ -28,7 +28,7 @@ export default async function EstudioDetalle({ params }: Params) {
   const { id } = await params;
   const session = await auth();
   if (!session?.user) redirect('/login');
-  const role = session.user.role as Role;
+  const _role = session.user.role as Role;
 
   const study = await prisma.study.findUnique({
     where: { id },

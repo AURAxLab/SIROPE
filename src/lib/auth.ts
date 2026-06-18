@@ -99,7 +99,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
                     active: true,
                   },
                 });
-                console.log(`[AUTH] Auto-provisioned LDAP user: ${normalizedEmail}`);
+                console.info(`[AUTH] Auto-provisioned LDAP user: ${normalizedEmail}`);
               } else {
                 // Actualizar nombre si cambió en LDAP
                 if (user.name !== ldapUser.name) {
@@ -167,6 +167,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           email: user.email,
           name: user.name,
           role: user.role as Role,
+          mustChangePassword: user.mustChangePassword,
         };
       },
     }),
@@ -189,6 +190,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (user) {
         token.id = user.id as string;
         token.role = (user as { role: Role }).role;
+        token.mustChangePassword = (user as { mustChangePassword?: boolean }).mustChangePassword ?? false;
       }
       return token;
     },
@@ -200,6 +202,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session.user) {
         session.user.id = token.id as string;
         (session.user as { role: Role }).role = token.role as Role;
+        (session.user as { mustChangePassword: boolean }).mustChangePassword = (token.mustChangePassword as boolean) ?? false;
       }
       return session;
     },
